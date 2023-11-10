@@ -1,4 +1,4 @@
-package com.example.petshelterg2.service;
+package com.example.petshelterg2.controller;
 
 import com.example.petshelterg2.config.BotConfig;
 import com.vdurmont.emoji.EmojiParser;
@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import static com.example.petshelterg2.service.Constants.*;
+import static com.example.petshelterg2.message.OtherMessage.*;
 
 
 @Slf4j //из библиотеки lombok реализует логирование через переменную log.
