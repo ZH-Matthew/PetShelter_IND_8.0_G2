@@ -1,6 +1,5 @@
 package com.example.petshelterg2.model;
 
-
 //класс для информации о пользователях кошек
 
 import javax.persistence.Entity;
@@ -8,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Set;
-@Entity
+@Entity(name = "CatOwners")
 public class CatOwners {
     @Id
     private Long chatId; // (Primary Key)

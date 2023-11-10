@@ -8,7 +8,7 @@ import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Entity
+@Entity(name = "DogOwners")
 public class DogOwners {
     @Id
     private Long chatId; //(Primary Key)
