@@ -21,3 +21,6 @@ ___
 
 Ссылка на общий чат обсуждения проекта:
 [Link](https://t.me/+26JaW_G91GFhZmEy)
+
+Ссылка на структуру проекта в Miro:
+[Link](https://miro.com/welcomeonboard/M1o2R3U3d2o5ZXpwbFNPWXlhVXA5QUlZOTFiQ0MwV2dRdE5INVBRY1VHNllIN0ZJbGc5NFYwc1JaYnE3MkpkQXwzNDU4NzY0NTQ2Mjg3MDQ5ODQ2fDI=?share_link_id=529512680046)
