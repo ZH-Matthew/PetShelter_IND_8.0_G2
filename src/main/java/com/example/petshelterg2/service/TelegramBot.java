@@ -54,10 +54,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     startCommand(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case "Приют кошек":
-                    cat(chatId);
+                    cat(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case "Приют собак":
-                    dog(chatId);
+                    dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 //тут будут ещё кейсы на другие команды (поэтому switch, а не if)
 
@@ -95,19 +95,21 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         }
     }
 
-    private void dog(long chatId) {//метод для перехода в собачий приют, с клавиатурой
+    private void dog(long chatId,String name) {//метод для перехода в собачий приют, с клавиатурой
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText("О приюте собак");
         message.setReplyMarkup(dogShelterKeyboard());//вызов метода для получения клавиатуры
         executeMessage(message);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
-    private void cat(long chatId) {//метод для перехода в кошачий приют, с клавиатурой
+    private void cat(long chatId,String name) {//метод для перехода в кошачий приют, с клавиатурой
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText("О приюте кошек");
         message.setReplyMarkup(catShelterKeyboard());//вызов метода для получения клавиатуры
         executeMessage(message);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private ReplyKeyboardMarkup startKeyboard() {//стартовая клавиатура
