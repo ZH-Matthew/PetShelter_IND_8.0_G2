@@ -8,7 +8,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.petshelterg2.service.Constants.*;
 
@@ -48,6 +53,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case "/start":
                     startCommand(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case "Приют кошек":
+                    cat(chatId);
+                    break;
+                case "Приют собак":
+                    dog(chatId);
+                    break;
                 //тут будут ещё кейсы на другие команды (поэтому switch, а не if)
 
                 default:
@@ -71,6 +82,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText(textToSend);
+        message.setReplyMarkup(startKeyboard());
         executeMessage(message); //вызываем метод отправки сообщения
     }
 
@@ -81,5 +93,73 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         } catch (TelegramApiException e) {
             log.error(ERROR_TEXT + e.getMessage());
         }
+    }
+
+    private void dog(long chatId) {//метод для перехода в собачий приют, с клавиатурой
+        SendMessage message = new SendMessage();
+        message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
+        message.setText("О приюте собак");
+        message.setReplyMarkup(dogShelterKeyboard());//вызов метода для получения клавиатуры
+        executeMessage(message);
+    }
+    private void cat(long chatId) {//метод для перехода в кошачий приют, с клавиатурой
+        SendMessage message = new SendMessage();
+        message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
+        message.setText("О приюте кошек");
+        message.setReplyMarkup(catShelterKeyboard());//вызов метода для получения клавиатуры
+        executeMessage(message);
+    }
+
+    private ReplyKeyboardMarkup startKeyboard() {//стартовая клавиатура
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание клавиатуры
+        List<KeyboardRow> keyboardRows = new ArrayList<>();//создание рядов в клавиатуре
+
+        KeyboardRow row = new KeyboardRow();//первый ряд клавиатуры
+        row.add("Приют кошек");//добавление кнопок (слева будут первые созданные)
+        row.add("Приют собак");
+        keyboardRows.add(row);//добавляем в клавиатуру ряд
+
+        row = new KeyboardRow();
+        row.add("/start");
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+    private ReplyKeyboardMarkup dogShelterKeyboard() {//клавиатура для собачено приюта
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add("Узнать информацию о приюте собак");
+        row.add("Как взять животное из приюта собак");
+        row.add("Прислать отчет о собаках в приюте");
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add("Позвать волонтера по собакам");
+        row.add("/start");
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+    private ReplyKeyboardMarkup catShelterKeyboard() {//клавиатура для кошачьего приюта
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add("Узнать информацию о приюте кошек");
+        row.add("Как взять животное из приюта кошек");
+        row.add("Прислать отчет о кошках из приюта");
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add("Позвать волонтера по кошкам");
+        row.add("/start");
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
     }
 }
