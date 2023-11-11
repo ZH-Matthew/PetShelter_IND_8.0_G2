@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import static com.example.petshelterg2.constants.Constants.*;
 import static com.example.petshelterg2.service.Constants.*;
 
 
@@ -60,7 +61,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //метод для приветственного сообщения
     private void startCommand(long chatId, String name) {
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
-        String answer = EmojiParser.parseToUnicode("Привет, " + name + ", твой будущий питомец скучает по тебе!" + " :blush:");
+        String answer = EmojiParser.parseToUnicode(String.format(GREETING_PLUS_SELECT_SHELTER_TEXT, name));
         prepareAndSendMessage(chatId, answer);                    // вызываем метод подготовки сообщения
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
