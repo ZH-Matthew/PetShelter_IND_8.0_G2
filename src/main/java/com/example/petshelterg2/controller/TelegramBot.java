@@ -77,8 +77,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId,update.getMessage().getChat().getUserName());
+                    break;
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
+                    break;
                 default:
                     prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
             }
