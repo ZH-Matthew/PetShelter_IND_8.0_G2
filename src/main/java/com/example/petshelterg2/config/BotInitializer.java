@@ -1,6 +1,6 @@
 package com.example.petshelterg2.config;
 
-import com.example.petshelterg2.service.TelegramBot;
+import com.example.petshelterg2.controller.TelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
