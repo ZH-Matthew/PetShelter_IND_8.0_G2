@@ -2,12 +2,15 @@ package com.example.petshelterg2.model;
 
 //класс для информации о пользователях собах
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Data
 @Entity(name = "DogOwners")
 public class DogOwners {
     @Id

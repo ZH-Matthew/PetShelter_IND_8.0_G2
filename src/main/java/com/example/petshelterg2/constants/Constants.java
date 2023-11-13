@@ -37,7 +37,9 @@ public class Constants {
     public final static String INITIAL_DOG_HANDLER_ADVICE = "Советы кинолога по первичному общению с собакой";
     public final static String DOG_HANDLER_RECOMMENDATION = "Рекомендации по проверенным кинологам для дальнейшего обращения к ним";
     public final static String REFUSAL_REASONS_LIST = "Список причин, почему могут отказать и не дать забрать собаку из приюта";
-
+    public final static String VOLUNTEER_MESSAGE = "Пользователю требуется помощь! \n t.me/";
+    public final static String SAVE_ADMIN = "Сохранить админа";
+    public final static String VOLUNTEER_WILL_WRITE_TO_YOU = "Волонтёр получил уведомление и скоро вам напишет!";
     //buttons
     public final static String MAIN_MAIN = "Вернуться в главное меню" + " " + BACK_EMOJI;
     public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;

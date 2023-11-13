@@ -15,7 +15,7 @@ public class BotConfig {
     @Value("${bot.token}")
     String token;
 
-//    @Value("${bot.owner}")  //чат-id админа
-//    Long ownerId;
+    @Value("${bot.owner}")  //чат-id админа (волонтёра)
+    String ownerId;
 
 }
