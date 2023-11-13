@@ -28,12 +28,12 @@ public class Constants {
     public final static String SAFETY_NOTES = "Общие рекомендации о технике безопасности на территории приюта";
     public final static String RULES_FOR_FIRST_MET = "Правила знакомства с животным до того, как забрать его из приюта";
     public final static String LIST_OF_DOCUMENTS_FOR_ADOPTION = "Список документов, необходимых для того, чтобы взять животное из приюта";
-    public final static String TRANSPORTING_RECOMENDATIONS = "Список рекомендаций по транспортировке животного";
-    public final static String ARRANGING_HOME_RECOMENDATIONS_YOUNG = "Список рекомендаций по обустройству дома для щенка/котенка";
-    public final static String ARRANGING_HOME_RECOMENDATIONS_ADULT = "Список рекомендаций по обустройству дома для взрослого животного";
-    public final static String ARRANGING_HOME_RECOMENDATIONS_DISABLED = "Список рекомендаций по обустройству дома для животного с ограниченными возможностями (зрение, передвижение)";
+    public final static String TRANSPORTING_RECOMMENDATIONS = "Список рекомендаций по транспортировке животного";
+    public final static String ARRANGING_HOME_RECOMMENDATIONS_YOUNG = "Список рекомендаций по обустройству дома для щенка/котенка";
+    public final static String ARRANGING_HOME_RECOMMENDATIONS_ADULT = "Список рекомендаций по обустройству дома для взрослого животного";
+    public final static String ARRANGING_HOME_RECOMMENDATIONS_DISABLED = "Список рекомендаций по обустройству дома для животного с ограниченными возможностями (зрение, передвижение)";
     public final static String INITIAL_DOG_HANDLER_ADVICE = "Советы кинолога по первичному общению с собакой";
-    public final static String DOG_HANDLER_RECOMENDATION = "Рекомендации по проверенным кинологам для дальнейшего обращения к ним";
+    public final static String DOG_HANDLER_RECOMMENDATION = "Рекомендации по проверенным кинологам для дальнейшего обращения к ним";
     public final static String REFUSAL_REASONS_LIST = "Список причин, почему могут отказать и не дать забрать собаку из приюта";
 
     //buttons
