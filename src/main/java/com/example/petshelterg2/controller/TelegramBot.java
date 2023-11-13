@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
-import static com.example.petshelterg2.message.OtherMessage.*;
+import static com.example.petshelterg2.constants.Constants.*;
 
 
 @Slf4j //из библиотеки lombok реализует логирование через переменную log.
