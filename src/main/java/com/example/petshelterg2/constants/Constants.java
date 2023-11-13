@@ -1,6 +1,8 @@
 package com.example.petshelterg2.constants;
 
 
+import com.vdurmont.emoji.EmojiParser;
+
 public class Constants {
     public static final String ERROR_TEXT = "Error occurred: ";
     // emoji
@@ -35,12 +37,15 @@ public class Constants {
     public final static String REFUSAL_REASONS_LIST = "Список причин, почему могут отказать и не дать забрать собаку из приюта";
 
     //buttons
-    public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;
-    public final static String DOG_SHELTER_BUTTON = "Приют для собак" + " " + DOG_EMOJI;
-    public final static String SHELTER_FIRST_STEP_BUTTON = "Этап 1: Узнать информацию о приюте";
-    public final static String SHELTER_SECOND_STEP_BUTTON = "Этап 2: Как взять животное из приюта";
-    public final static String SHELTER_THIRD_STEP_BUTTON = "Этап 3: Прислать отчет о питомце";
-    public final static String CALL_VOLUNTEER_BUTTON = "Позвать волонтера" + " " + VOLUNTEER_EMOJI;
+    public final static String CAT_SHELTER_BUTTON = EmojiParser.parseToUnicode("Приют для кошек" + " " + CAT_EMOJI);
+    public final static String DOG_SHELTER_BUTTON = EmojiParser.parseToUnicode("Приют для собак" + " " + DOG_EMOJI);
+    public final static String SHELTER_FIRST_STEP_BUTTON_DOG = "Узнать информацию о приюте";
+    public final static String SHELTER_SECOND_STEP_BUTTON_DOG = "Как взять животное из приюта";
+    public final static String SHELTER_THIRD_STEP_BUTTON_DOG = "Прислать отчет о питомце";
+    public final static String SHELTER_FIRST_STEP_BUTTON_CAT = "Узнать информацию о приюте";
+    public final static String SHELTER_SECOND_STEP_BUTTON_CAT = "Как взять животное из приюта";
+    public final static String SHELTER_THIRD_STEP_BUTTON_CAT = "Прислать отчет о питомце";
+    public final static String CALL_VOLUNTEER_BUTTON =EmojiParser.parseToUnicode( "Позвать волонтера" + " " + VOLUNTEER_EMOJI);
     public final static String ABOUT_SHELTER_BUTTON = "Информация о приюте" + " " + SHELTER_EMOJI;
     public final static String SHELTER_SCHEDULE_BUTTON = "График работы" + " " + SCHEDULE_EMOJI;
     public final static String SECURITY_CONTACTS_BUTTON = "Контакты охраны" + " " + GUARD_EMOJI;

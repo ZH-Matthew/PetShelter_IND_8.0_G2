@@ -96,7 +96,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void dog(long chatId,String name) {//метод для перехода в собачий приют, с клавиатурой
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
-        message.setText("О приюте собак");
+        message.setText(DOG_SHELTER_SELECT_TEXT);
         message.setReplyMarkup(dogShelterKeyboard());//вызов метода для получения клавиатуры
         executeMessage(message);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
@@ -104,7 +104,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void cat(long chatId,String name) {//метод для перехода в кошачий приют, с клавиатурой
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
-        message.setText("О приюте кошек");
+        message.setText(CAT_SHELTER_SELECT_TEXT);
         message.setReplyMarkup(catShelterKeyboard());//вызов метода для получения клавиатуры
         executeMessage(message);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
@@ -131,13 +131,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Узнать информацию о приюте собак");
-        row.add("Как взять животное из приюта собак");
-        row.add("Прислать отчет о собаках в приюте");
+        row.add(SHELTER_FIRST_STEP_BUTTON_DOG);
+        row.add(SHELTER_SECOND_STEP_BUTTON_DOG);
+        row.add(SHELTER_THIRD_STEP_BUTTON_DOG);
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add("Позвать волонтера по собакам");
+        row.add(CALL_VOLUNTEER_BUTTON);
         row.add("/start");
         keyboardRows.add(row);
 
@@ -149,13 +149,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Узнать информацию о приюте кошек");
-        row.add("Как взять животное из приюта кошек");
-        row.add("Прислать отчет о кошках из приюта");
+        row.add(SHELTER_FIRST_STEP_BUTTON_CAT);
+        row.add(SHELTER_SECOND_STEP_BUTTON_CAT);
+        row.add(SHELTER_THIRD_STEP_BUTTON_CAT);
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add("Позвать волонтера по кошкам");
+        row.add(CALL_VOLUNTEER_BUTTON);
         row.add("/start");
         keyboardRows.add(row);
 
