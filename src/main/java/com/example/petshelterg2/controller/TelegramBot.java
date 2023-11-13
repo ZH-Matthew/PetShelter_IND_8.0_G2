@@ -51,10 +51,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case "/start":
                     startCommand(chatId, update.getMessage().getChat().getFirstName());
                     break;
-                case "Приют кошек":
+                case MAIN_MAIN:
+                    mainMenu(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case CAT_SHELTER_BUTTON:
                     cat(chatId, update.getMessage().getChat().getFirstName());
                     break;
-                case "Приют собак":
+                case DOG_SHELTER_BUTTON:
                     dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 //тут будут ещё кейсы на другие команды (поэтому switch, а не if)
@@ -69,18 +72,24 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //метод для приветственного сообщения
     private void startCommand(long chatId, String name) {
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
-        String answer = EmojiParser.parseToUnicode("Привет, " + name + ", твой будущий питомец скучает по тебе!" + " :blush:");
-        prepareAndSendMessage(chatId, answer);                    // вызываем метод подготовки сообщения
+        String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
+        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());                    // вызываем метод подготовки сообщения
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
 
     //метод подготовки сообщения и его отправки
+    private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend,ReplyKeyboardMarkup keyboardMarkup) {
+        SendMessage message = new SendMessage();
+        message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
+        message.setText(textToSend);
+        message.setReplyMarkup(keyboardMarkup);
+        executeMessage(message); //вызываем метод отправки сообщения
+    }
     private void prepareAndSendMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText(textToSend);
-        message.setReplyMarkup(startKeyboard());
         executeMessage(message); //вызываем метод отправки сообщения
     }
 
@@ -93,20 +102,18 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         }
     }
 
+    private void mainMenu(long chatId, String name) {
+        String answer =String.format(GREETING_PLUS_SELECT_SHELTER_TEXT,name);
+        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
     private void dog(long chatId,String name) {//метод для перехода в собачий приют, с клавиатурой
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
-        message.setText("О приюте собак");
-        message.setReplyMarkup(dogShelterKeyboard());//вызов метода для получения клавиатуры
-        executeMessage(message);
+        prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT,dogShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
     private void cat(long chatId,String name) {//метод для перехода в кошачий приют, с клавиатурой
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
-        message.setText("О приюте кошек");
-        message.setReplyMarkup(catShelterKeyboard());//вызов метода для получения клавиатуры
-        executeMessage(message);
+        prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT,catShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -115,14 +122,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();//создание рядов в клавиатуре
 
         KeyboardRow row = new KeyboardRow();//первый ряд клавиатуры
-        row.add("Приют кошек");//добавление кнопок (слева будут первые созданные)
-        row.add("Приют собак");
+        row.add(CAT_SHELTER_BUTTON);//добавление кнопок (слева будут первые созданные)
+        row.add(DOG_SHELTER_BUTTON);
         keyboardRows.add(row);//добавляем в клавиатуру ряд
-
-        row = new KeyboardRow();
-        row.add("/start");
-        keyboardRows.add(row);
-
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
@@ -131,14 +133,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Узнать информацию о приюте собак");
-        row.add("Как взять животное из приюта собак");
-        row.add("Прислать отчет о собаках в приюте");
+        row.add(SHELTER_FIRST_STEP_BUTTON_DOG);
+        row.add(SHELTER_SECOND_STEP_BUTTON_DOG);
+        row.add(SHELTER_THIRD_STEP_BUTTON_DOG);
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add("Позвать волонтера по собакам");
-        row.add("/start");
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
         keyboardRows.add(row);
 
         keyboardMarkup.setKeyboard(keyboardRows);
@@ -149,14 +151,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Узнать информацию о приюте кошек");
-        row.add("Как взять животное из приюта кошек");
-        row.add("Прислать отчет о кошках из приюта");
+        row.add(SHELTER_FIRST_STEP_BUTTON_CAT);
+        row.add(SHELTER_SECOND_STEP_BUTTON_CAT);
+        row.add(SHELTER_THIRD_STEP_BUTTON_CAT);
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add("Позвать волонтера по кошкам");
-        row.add("/start");
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
         keyboardRows.add(row);
 
         keyboardMarkup.setKeyboard(keyboardRows);
