@@ -1,7 +1,7 @@
 package com.example.petshelterg2.controller;
-
 import com.example.petshelterg2.config.BotConfig;
-import com.vdurmont.emoji.EmojiParser;
+import com.example.petshelterg2.repository.CatOwnersRepository;
+import com.example.petshelterg2.repository.DogOwnersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,8 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.example.petshelterg2.constants.Constants.*;
 
 
@@ -22,6 +24,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     @Autowired
     final BotConfig config;
+
+    @Autowired
+    private DogOwnersRepository dogOwnersRepository;
+
+    @Autowired
+    private CatOwnersRepository catOwnersRepository;
 
     public TelegramBot(BotConfig config) {
         this.config = config;
@@ -39,6 +47,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return config.getToken();
     }
 
+    public String getBotOwnerId() {
+        return config.getOwnerId();
+    }
+
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
@@ -46,6 +58,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+//            if(messageText.equals("сохранить админа")){
+//                showAdminChatId(update);
+//            }
 
             switch (messageText) {
                 case "/start":
@@ -60,8 +75,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case DOG_SHELTER_BUTTON:
                     dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
-                //тут будут ещё кейсы на другие команды (поэтому switch, а не if)
-
+                case CALL_VOLUNTEER_BUTTON:
+                    callAVolunteer(update.getMessage().getChat().getUserName());
+                case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
+                    showAdminChatId(update);
                 default:
                     prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
             }
@@ -73,19 +90,20 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void startCommand(long chatId, String name) {
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
         String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
-        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());                    // вызываем метод подготовки сообщения
+        prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());                    // вызываем метод подготовки сообщения
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
 
     //метод подготовки сообщения и его отправки
-    private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend,ReplyKeyboardMarkup keyboardMarkup) {
+    private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend, ReplyKeyboardMarkup keyboardMarkup) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText(textToSend);
         message.setReplyMarkup(keyboardMarkup);
         executeMessage(message); //вызываем метод отправки сообщения
     }
+
     private void prepareAndSendMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
@@ -103,17 +121,18 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void mainMenu(long chatId, String name) {
-        String answer =String.format(GREETING_PLUS_SELECT_SHELTER_TEXT,name);
-        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());
+        String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT, name);
+        prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
-    private void dog(long chatId,String name) {//метод для перехода в собачий приют, с клавиатурой
-        prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT,dogShelterKeyboard());
+    private void dog(long chatId, String name) {//метод для перехода в собачий приют, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
-    private void cat(long chatId,String name) {//метод для перехода в кошачий приют, с клавиатурой
-        prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT,catShelterKeyboard());
+
+    private void cat(long chatId, String name) {//метод для перехода в кошачий приют, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -128,6 +147,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup dogShelterKeyboard() {//клавиатура для собачено приюта
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -146,6 +166,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup catShelterKeyboard() {//клавиатура для кошачьего приюта
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -163,5 +184,17 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
+    }
+
+    private void callAVolunteer(String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
+        SendMessage message = new SendMessage();
+        message.setChatId(getBotOwnerId());             // дергаю метод внутри класса, который вызывает getOwnerId (переменную из BotConfig),тот в свою очередь берет инфу о переменной из файла app.prop
+        message.setText(VOLUNTEER_MESSAGE + userName);  //формируем сообщение для волонтёра
+        executeMessage(message);                        //отправляем сообщение контактными данными пользователя в личку волонтёру
+    }
+
+    private void showAdminChatId(Update update) { //метод выводит в лог консоли ChatId админа, если была написана команда "сохранить админа"
+        Long chatId = update.getMessage().getChatId();
+        log.info("ADMIN CHAT_ID: " + chatId);
     }
 }
