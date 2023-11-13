@@ -11,9 +11,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.example.petshelterg2.constants.Constants.*;
+import static java.lang.String.format;
 
 
 @Slf4j //из библиотеки lombok реализует логирование через переменную log.
@@ -47,9 +50,19 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
+            if (messageText.equals("/start")) {
+                String greetingMessage = String.format(" Бот предназначен для помощи в выборе питомца из приюта. ", update.getMessage().getFrom().getFirstName());
+                prepareAndSendMessage(chatId, greetingMessage); // даём информацию о боте
+                startCommand(chatId, "1. " + CAT_SHELTER_BUTTON); // приветствуем пользователя и предлагаем перейти в приют кошек
+                startCommand(chatId, "2. " + DOG_SHELTER_BUTTON); // приветствуем пользователя и предлагаем перейти в приют собак
+            }
+
             switch (messageText) {
-                case "/start":
-                    startCommand(chatId, update.getMessage().getChat().getFirstName());
+                case "1":
+                    prepareAndSendMessage(chatId, "Кошки");
+                    break;
+                case "2":
+                    prepareAndSendMessage(chatId, "Собаки");
                     break;
                 case MAIN_MAIN:
                     mainMenu(chatId, update.getMessage().getChat().getFirstName());
@@ -73,19 +86,20 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void startCommand(long chatId, String name) {
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
         String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
-        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());                    // вызываем метод подготовки сообщения
+        prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());                    // вызываем метод подготовки сообщения
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
 
     //метод подготовки сообщения и его отправки
-    private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend,ReplyKeyboardMarkup keyboardMarkup) {
+    private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend, ReplyKeyboardMarkup keyboardMarkup) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
         message.setText(textToSend);
         message.setReplyMarkup(keyboardMarkup);
         executeMessage(message); //вызываем метод отправки сообщения
     }
+
     private void prepareAndSendMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId)); //!!! chatID на входе всегда Long, а на выходе всегда String
@@ -103,17 +117,18 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void mainMenu(long chatId, String name) {
-        String answer =String.format(GREETING_PLUS_SELECT_SHELTER_TEXT,name);
-        prepareAndSendMessageAndKeyboard(chatId, answer,startKeyboard());
+        String answer = format(GREETING_PLUS_SELECT_SHELTER_TEXT, name);
+        prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
-    private void dog(long chatId,String name) {//метод для перехода в собачий приют, с клавиатурой
-        prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT,dogShelterKeyboard());
+    private void dog(long chatId, String name) {//метод для перехода в собачий приют, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
-    private void cat(long chatId,String name) {//метод для перехода в кошачий приют, с клавиатурой
-        prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT,catShelterKeyboard());
+
+    private void cat(long chatId, String name) {//метод для перехода в кошачий приют, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -128,6 +143,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup dogShelterKeyboard() {//клавиатура для собачено приюта
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -146,6 +162,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup catShelterKeyboard() {//клавиатура для кошачьего приюта
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
