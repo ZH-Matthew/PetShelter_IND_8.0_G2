@@ -76,7 +76,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
-                    callAVolunteer(update.getMessage().getChat().getUserName());
+                    callAVolunteer(chatId,update.getMessage().getChat().getUserName());
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
                 default:
@@ -186,11 +186,17 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return keyboardMarkup;
     }
 
-    private void callAVolunteer(String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
-        SendMessage message = new SendMessage();
-        message.setChatId(getBotOwnerId());             // дергаю метод внутри класса, который вызывает getOwnerId (переменную из BotConfig),тот в свою очередь берет инфу о переменной из файла app.prop
-        message.setText(VOLUNTEER_MESSAGE + userName);  //формируем сообщение для волонтёра
-        executeMessage(message);                        //отправляем сообщение контактными данными пользователя в личку волонтёру
+    private void callAVolunteer(long chatId,String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
+        SendMessage messageVolunteer = new SendMessage();           //принимает два параметра: chatID пользователя и его никнейм
+        SendMessage messageUser = new SendMessage();                //создаёт два сообщения, одно волонтеру, другое пользователю
+
+        messageVolunteer.setChatId(getBotOwnerId());             // дергаю метод внутри класса, который вызывает getOwnerId (переменную из BotConfig),тот в свою очередь берет инфу о переменной из файла app.prop
+        messageVolunteer.setText(VOLUNTEER_MESSAGE + userName);  //формируем сообщение для волонтёра
+        messageUser.setChatId(String.valueOf(chatId));
+        messageUser.setText(VOLUNTEER_WILL_WRITE_TO_YOU);       //заполняю сооб
+
+        executeMessage(messageVolunteer);                        //отправляем сообщение контактными данными пользователя в личку волонтёру
+        executeMessage(messageUser);
     }
 
     private void showAdminChatId(Update update) { //метод выводит в лог консоли ChatId админа, если была написана команда "сохранить админа"
