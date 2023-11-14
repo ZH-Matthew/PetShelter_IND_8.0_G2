@@ -1,4 +1,5 @@
 package com.example.petshelterg2.controller;
+
 import com.example.petshelterg2.config.BotConfig;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.petshelterg2.constants.Constants.*;
+import static com.example.petshelterg2.constants.Constants.RECOMMENDATIONS_HOME_BUTTON1_DOG;
 
 
 @Slf4j //из библиотеки lombok реализует логирование через переменную log.
@@ -77,6 +79,21 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     break;
                 case ABOUT_SHELTER_BUTTON_DOG:
                     informationDogShelter(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SHELTER_SECOND_STEP_BUTTON_CAT:
+                    takeAnCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SHELTER_SECOND_STEP_BUTTON_DOG:
+                    takeAnDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_BUTTON1_CAT:
+                    recommendationsHomeCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_BUTTON1_DOG:
+                    recommendationsHomeDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL:
+                    tipsFromDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId,update.getMessage().getChat().getUserName());
@@ -140,12 +157,39 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void informationCatShelter(long chatId, String name) {//метод для перехода в информацию о кошачьем приюте, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, ABOUT_CAT_SHELTER_TEXT, informationCatShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void informationDogShelter(long chatId, String name) {//метод для перехода в информацию о собачьем приюте, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, ABOUT_DOG_SHELTER_TEXT, informationDogShelterKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void takeAnCat(long chatId, String name) {
+        prepareAndSendMessageAndKeyboard(chatId, SHELTER_SECOND_STEP_BUTTON_CAT, takeAnCatShelterKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void takeAnDog(long chatId, String name) {
+        prepareAndSendMessageAndKeyboard(chatId, SHELTER_SECOND_STEP_BUTTON_DOG, takeAnDogShelterKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void recommendationsHomeDog(long chatId, String name) {
+        prepareAndSendMessageAndKeyboard(chatId, RECOMMENDATIONS_HOME_BUTTON2_DOG, recommendationsHomeDogKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void recommendationsHomeCat(long chatId, String name) {
+        prepareAndSendMessageAndKeyboard(chatId, RECOMMENDATIONS_HOME_BUTTON2_CAT, recommendationsHomeCatKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void tipsFromDog(long chatId, String name) {
+        prepareAndSendMessageAndKeyboard(chatId, TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL, tipsFromDogKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -200,6 +244,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup informationCatShelterKeyboard() {//клавиатура с информацией о кошачьем приюте
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -218,6 +263,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
     private ReplyKeyboardMarkup informationDogShelterKeyboard() {//клавиатура с информацией о собачьем приюте
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -237,7 +283,110 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return keyboardMarkup;
     }
 
-    private void callAVolunteer(long chatId,String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
+    private ReplyKeyboardMarkup takeAnDogShelterKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(RULES_FOR_GETTING_KNOW_DOG);
+        row.add(LIST_DOCUMENTS_TAKE_ANIMAL_DOG);
+        row.add(RECOMMENDATIONS_TRANSPORTATION_DOG);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(RECOMMENDATIONS_HOME_BUTTON1_DOG);
+        row.add(TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup takeAnCatShelterKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(RULES_FOR_GETTING_KNOW_CAT);
+        row.add(LIST_DOCUMENTS_TAKE_ANIMAL_CAT);
+        row.add(RECOMMENDATIONS_TRANSPORTATION_CAT);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(RECOMMENDATIONS_HOME_BUTTON1_CAT);
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup recommendationsHomeDogKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(RECOMMENDATIONS_HOME_BUTTON2_DOG);
+        row.add(RECOMMENDATIONS_HOME_PUPPY);
+        row.add(RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup recommendationsHomeCatKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(RECOMMENDATIONS_HOME_BUTTON2_CAT);
+        row.add(RECOMMENDATIONS_HOME_KITTY);
+        row.add(RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup tipsFromDogKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG);
+        row.add(RECOMMENDATIONS_FURTHER_REFERENCE_THEM);
+        row.add(LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+
+    private void callAVolunteer(long chatId, String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
         SendMessage messageVolunteer = new SendMessage();           //принимает два параметра: chatID пользователя и его никнейм
         SendMessage messageUser = new SendMessage();                //создаёт два сообщения, одно волонтеру, другое пользователю
 
