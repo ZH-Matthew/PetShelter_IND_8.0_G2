@@ -51,10 +51,14 @@ public class Constants {
     public final static String SHELTER_SECOND_STEP_BUTTON_CAT = "Как взять животное из приюта";
     public final static String SHELTER_THIRD_STEP_BUTTON_CAT = "Прислать отчет о питомце";
     public final static String CALL_VOLUNTEER_BUTTON = "Позвать волонтера" + " " + VOLUNTEER_EMOJI;
-    public final static String ABOUT_SHELTER_BUTTON = "Информация о приюте" + " " + SHELTER_EMOJI;
-    public final static String SHELTER_SCHEDULE_BUTTON = "График работы" + " " + SCHEDULE_EMOJI;
-    public final static String SECURITY_CONTACTS_BUTTON = "Контакты охраны" + " " + GUARD_EMOJI;
-    public final static String SAFETY_NOTES_BUTTON = "Техника безопасности на территории приюта";
+    public final static String ABOUT_SHELTER_BUTTON_CAT = "Информация о приюте кошек" + " " + SHELTER_EMOJI;
+    public final static String SHELTER_SCHEDULE_BUTTON_CAT = "График работы приюта кошек" + " " + SCHEDULE_EMOJI;
+    public final static String SECURITY_CONTACTS_BUTTON_CAT = "Контакты охраны приюта кошек" + " " + GUARD_EMOJI;
+    public final static String SAFETY_NOTES_BUTTON_CAT = "Техника безопасности на территории приюта кошек";
+    public final static String ABOUT_SHELTER_BUTTON_DOG = "Информация о приюте собак" + " " + SHELTER_EMOJI;
+    public final static String SHELTER_SCHEDULE_BUTTON_DOG = "График работы приюта собак" + " " + SCHEDULE_EMOJI;
+    public final static String SECURITY_CONTACTS_BUTTON_DOG = "Контакты охраны приюта собак" + " " + GUARD_EMOJI;
+    public final static String SAFETY_NOTES_BUTTON_DOG = "Техника безопасности на территории приюта собак";
     public final static String CONTACT_WITH_ME_BUTTON = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи.
 
 

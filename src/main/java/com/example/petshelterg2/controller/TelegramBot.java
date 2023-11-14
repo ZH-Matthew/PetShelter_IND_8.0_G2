@@ -72,6 +72,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case DOG_SHELTER_BUTTON:
                     dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case ABOUT_SHELTER_BUTTON_CAT:
+                    informationCatShelter(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case ABOUT_SHELTER_BUTTON_DOG:
+                    informationDogShelter(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId,update.getMessage().getChat().getUserName());
                     break;
@@ -134,6 +140,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+    private void informationCatShelter(long chatId, String name) {//метод для перехода в информацию о кошачьем приюте, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, ABOUT_CAT_SHELTER_TEXT, informationCatShelterKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void informationDogShelter(long chatId, String name) {//метод для перехода в информацию о собачьем приюте, с клавиатурой
+        prepareAndSendMessageAndKeyboard(chatId, ABOUT_DOG_SHELTER_TEXT, informationDogShelterKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
 
     private ReplyKeyboardMarkup startKeyboard() {//стартовая клавиатура
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание клавиатуры
@@ -152,7 +166,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add(SHELTER_FIRST_STEP_BUTTON_DOG);
+        row.add(ABOUT_SHELTER_BUTTON_DOG);
         row.add(SHELTER_SECOND_STEP_BUTTON_DOG);
         row.add(SHELTER_THIRD_STEP_BUTTON_DOG);
         keyboardRows.add(row);
@@ -172,13 +186,49 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add(SHELTER_FIRST_STEP_BUTTON_CAT);
+        row.add(ABOUT_SHELTER_BUTTON_CAT);
         row.add(SHELTER_SECOND_STEP_BUTTON_CAT);
         row.add(SHELTER_THIRD_STEP_BUTTON_CAT);
         keyboardRows.add(row);
 
         row = new KeyboardRow();
         row.add(CONTACT_WITH_ME_BUTTON);
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+    private ReplyKeyboardMarkup informationCatShelterKeyboard() {//клавиатура с информацией о кошачьем приюте
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(SHELTER_SCHEDULE_BUTTON_CAT);
+        row.add(SECURITY_CONTACTS_BUTTON_CAT);
+        row.add(SAFETY_NOTES_BUTTON_CAT);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
+        row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+    private ReplyKeyboardMarkup informationDogShelterKeyboard() {//клавиатура с информацией о собачьем приюте
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(SHELTER_SCHEDULE_BUTTON_DOG);
+        row.add(SECURITY_CONTACTS_BUTTON_DOG);
+        row.add(SAFETY_NOTES_BUTTON_DOG);
+        keyboardRows.add(row);
+
+        row = new KeyboardRow();
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
