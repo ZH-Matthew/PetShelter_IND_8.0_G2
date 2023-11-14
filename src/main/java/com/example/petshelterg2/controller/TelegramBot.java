@@ -158,7 +158,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(DOG_SHELTER_SECURITY_CONTACTS);
+        row.add(CONTACT_WITH_ME_BUTTON);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -178,7 +178,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(CAT_SHELTER_SECURITY_CONTACTS);
+        row.add(CONTACT_WITH_ME_BUTTON);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
