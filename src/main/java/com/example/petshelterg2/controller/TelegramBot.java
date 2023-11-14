@@ -58,9 +58,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
-//            if(messageText.equals("сохранить админа")){
-//                showAdminChatId(update);
-//            }
 
             switch (messageText) {
                 case "/start":
