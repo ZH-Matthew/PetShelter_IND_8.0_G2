@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 @Entity(name = "CatOwners")
 public class CatOwners {
@@ -26,4 +27,87 @@ public class CatOwners {
 
     @OneToMany(mappedBy = "catOwners")
     private Set<CatReport> catReports;
+
+    public CatOwners(Long chatId, String lastName, String firstName, String userName, String phoneNumber, LocalDateTime dateTime, Set<CatReport> catReports) {
+        this.chatId = chatId;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.dateTime = dateTime;
+        this.catReports = catReports;
+    }
+
+    public CatOwners() {
+    }
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public Set<CatReport> getCatReports() {
+        return catReports;
+    }
+
+    public void setCatReports(Set<CatReport> catReports) {
+        this.catReports = catReports;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CatOwners catOwners = (CatOwners) o;
+        return Objects.equals(getChatId(), catOwners.getChatId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getChatId());
+    }
+
 }

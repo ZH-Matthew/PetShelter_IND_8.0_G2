@@ -1,5 +1,7 @@
 package com.example.petshelterg2.controller;
+
 import com.example.petshelterg2.config.BotConfig;
+import com.example.petshelterg2.model.CatOwners;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -73,10 +76,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     dog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
-                    callAVolunteer(chatId,update.getMessage().getChat().getUserName());
+                    callAVolunteer(chatId, update.getMessage().getChat().getUserName());
                     break;
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
+                    break;
+                case CONTACT_WITH_ME_BUTTON:
+                    callMe(update);
                     break;
                 default:
                     prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
@@ -187,7 +193,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return keyboardMarkup;
     }
 
-    private void callAVolunteer(long chatId,String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
+    private void callAVolunteer(long chatId, String userName) {       //метод для вызова волонтера (суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волнтёр законнектил чаты и начал общение)
         SendMessage messageVolunteer = new SendMessage();           //принимает два параметра: chatID пользователя и его никнейм
         SendMessage messageUser = new SendMessage();                //создаёт два сообщения, одно волонтеру, другое пользователю
 
@@ -203,5 +209,52 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void showAdminChatId(Update update) { //метод выводит в лог консоли ChatId админа, если была написана команда "сохранить админа"
         Long chatId = update.getMessage().getChatId();
         log.info("ADMIN CHAT_ID: " + chatId);
+    }
+
+    private void saveContactCat(Update update) {
+
+        Long chatId = update.getMessage().getChatId();
+        String firstName = update.getMessage().getChat().getFirstName();
+        String lastName = update.getMessage().getChat().getLastName();
+        String userName = update.getMessage().getChat().getUserName();
+        String phoneNumber = update.getMessage().getContact().getPhoneNumber();
+
+        CatOwners catOwners = new CatOwners(chatId, lastName, firstName, userName, phoneNumber, null, null);
+        catOwnersRepository.save(catOwners);
+        log.info("contact saved");
+
+    }
+
+    private ReplyKeyboardMarkup catContactMe() {
+        SendMessage sendMessage = new SendMessage();
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+        // Создаем список строк клавиатуры
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+        // Первая строчка клавиатуры
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        // Добавляем кнопки в первую строчку клавиатуры
+        KeyboardButton keyboardButton = new KeyboardButton();
+
+        keyboardButton.setText("Поделиться номером >");
+        keyboardButton.setRequestContact(true);
+        keyboardFirstRow.add(keyboardButton);
+
+        // Добавляем все строчки клавиатуры в список
+        keyboard.add(keyboardFirstRow);
+        // и устанваливаем этот список нашей клавиатуре
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        return replyKeyboardMarkup;
+    }
+
+    private void callMe(Update update) {//метод для перехода в кошачий приют, с клавиатурой
+        prepareAndSendMessageAndKeyboard(update.getMessage().getChatId(), "Оставьте свой номер телефона, нажав на кнопку снизу экрана", catContactMe());
+        log.info("Replied to user " + update.getMessage().getChat().getFirstName());//лог о том что мы ответили пользователю
+        saveContactCat(update);
     }
 }
