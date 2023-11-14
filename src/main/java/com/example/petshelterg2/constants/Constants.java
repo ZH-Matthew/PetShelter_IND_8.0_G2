@@ -55,7 +55,7 @@ public class Constants {
     public final static String SHELTER_SCHEDULE_BUTTON = "График работы" + " " + SCHEDULE_EMOJI;
     public final static String SECURITY_CONTACTS_BUTTON = "Контакты охраны" + " " + GUARD_EMOJI;
     public final static String SAFETY_NOTES_BUTTON = "Техника безопасности на территории приюта";
-    public final static String CONTACT_WITH_ME_BUTTON = "Свяжитесь со мной" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи.
+    public final static String CONTACT_WITH_ME_BUTTON = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи.
 
 
 }
