@@ -28,6 +28,6 @@ public class DogOwners {
 //    и еще пару методов которые добавляют 14 или 30 дней к испытательному сроку
     private LocalDateTime dateTime;
 
-    @OneToMany(mappedBy = "dogOwners")
-    private Set<DogReport> dogReports;
+//    @OneToMany(mappedBy = "dogOwners")
+//    private Set<DogReport> dogReports;
 }

@@ -20,7 +20,7 @@ public class DogReport {
 //    - *Изменение в поведении: отказ от старых привычек, приобретение новых.*
     private String info;
 
-    @ManyToOne
-    @JoinColumn(name = "chatId")
-    private DogOwners dogOwners;
+//    @ManyToOne
+//    @JoinColumn(name = "chatId")
+//    private DogOwners dogOwners;
 }
