@@ -1,6 +1,8 @@
 package com.example.petshelterg2.controller;
+
 import com.example.petshelterg2.config.BotConfig;
 import com.example.petshelterg2.model.CatOwners;
+import com.example.petshelterg2.model.DogOwners;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +57,18 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return config.getOwnerId();
     }
 
+    public boolean choosingAShelter; //переменная выбора приюта кошки - false (0) , собаки true (1)
+
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.getMessage().getContact()!= null){   //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
-            saveOwner(update);                          //вызывает метод сохранения пользователя
+        //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
+        if (update.getMessage().getContact() != null) {   //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
+            if (choosingAShelter) {
+                saveDogOwner(update);                          //вызывает метод сохранения пользователя в БД к владельцам собак
+            } else {
+                saveCatOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам кошек
+            }
         }
 
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
@@ -209,6 +219,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private ReplyKeyboardMarkup dogShelterKeyboard() {//клавиатура для собачено приюта
+        choosingAShelter = true;
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
@@ -219,7 +230,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(CONTACT_WITH_ME_BUTTON);
+        KeyboardButton keyboardButtonDog = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonDog.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
+        keyboardButtonDog.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+        row.add(keyboardButtonDog);                                //добавил кнопку в клавиатуру
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -229,6 +243,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private ReplyKeyboardMarkup catShelterKeyboard() {//клавиатура для кошачьего приюта
+        choosingAShelter = false;
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
@@ -239,10 +254,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        KeyboardButton keyboardButton = new KeyboardButton();   //создал функциональную кнопку
-        keyboardButton.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
-        keyboardButton.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
-        row.add(keyboardButton);                                //добавил кнопку в клавиатуру
+        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonCat.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
+        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+        row.add(keyboardButtonCat);                                //добавил кнопку в клавиатуру
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -410,7 +425,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         log.info("ADMIN CHAT_ID: " + chatId);
     }
 
-    private void saveOwner(Update update) {                                     //метод сохранения пользователя в БД (пока что в базу с кошками)
+    private void saveCatOwner(Update update) {                                     //метод сохранения пользователя в БД (с кошками)
         Long chatId = update.getMessage().getChatId();
         String firstName = update.getMessage().getChat().getFirstName();
         String lastName = update.getMessage().getChat().getLastName();
@@ -426,6 +441,25 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         catOwner.setPhoneNumber(phoneNumber);
         catOwner.setDateTime(currentDateTime);
         catOwnersRepository.save(catOwner);
-        log.info("contact saved "+ catOwner);
+        log.info("contact saved " + catOwner);
+    }
+
+    private void saveDogOwner(Update update) {                                     //метод сохранения пользователя в БД (с собаками)
+        Long chatId = update.getMessage().getChatId();
+        String firstName = update.getMessage().getChat().getFirstName();
+        String lastName = update.getMessage().getChat().getLastName();
+        String userName = update.getMessage().getChat().getUserName();
+        String phoneNumber = update.getMessage().getContact().getPhoneNumber();
+        java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+
+        DogOwners dogOwner = new DogOwners();
+        dogOwner.setUserName(userName);
+        dogOwner.setChatId(chatId);
+        dogOwner.setFirstName(firstName);
+        dogOwner.setLastName(lastName);
+        dogOwner.setPhoneNumber(phoneNumber);
+        dogOwner.setDateTime(currentDateTime);
+        dogOwnersRepository.save(dogOwner);
+        log.info("contact saved " + dogOwner);
     }
 }
