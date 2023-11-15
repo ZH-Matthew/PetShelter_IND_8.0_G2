@@ -10,6 +10,10 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+/**
+ * Класс для инициализации бота <p>
+ * <b>КОД В ЭТОМ КЛАССЕ НЕ ТРОГАТЬ!</b>
+ */
 @Slf4j  //из библиотеки lombok реализует логирование через переменную log.
 @Component
 public class BotInitializer {

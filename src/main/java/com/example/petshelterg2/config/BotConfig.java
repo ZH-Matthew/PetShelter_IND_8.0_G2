@@ -4,7 +4,11 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-
+/**
+ * Класс для конфигурации бота <p>
+ * Содержит 3 поля со значениями: <p>
+ * Название бота, токен бота и chatID админа
+ */
 @Configuration
 @Data //из библиотеки Lombok, реализует геттеры /сеттеры, переопределяет tostring
 public class BotConfig {
@@ -14,8 +18,11 @@ public class BotConfig {
 
     @Value("${bot.token}")
     String token;
-
-    @Value("${bot.owner}")  //чат-id админа (волонтёра)
+    /**
+     * Переменная хранит чат-id админа (волонтёра)
+     * Подтягивая значение из файла <u>application.properties</u>
+     */
+    @Value("${bot.owner}")
     String ownerId;
 
 }
