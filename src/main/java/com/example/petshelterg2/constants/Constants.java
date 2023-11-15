@@ -1,6 +1,8 @@
 package com.example.petshelterg2.constants;
 
-
+/**
+ * Хранит все письменные данные и emoji в виде публичных констант
+ */
 public class Constants {
     public static final String ERROR_TEXT = "Error occurred: ";
     // emoji
@@ -17,7 +19,7 @@ public class Constants {
 
     // messages
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START = "Привет, %s, твой будущий питомец скучает по тебе!" + " " + BLUSH_EMOJI + " Выберите приют ";
-    public final static String GREETING_PLUS_SELECT_SHELTER_TEXT = "Снова здравствуйте, %s, выберите приют, ваш ждет питомец!" + " " + BLUSH_EMOJI;
+    public final static String GREETING_PLUS_SELECT_SHELTER_TEXT = "Снова здравствуйте, %s, выберите приют, ваc ждет питомец!" + " " + BLUSH_EMOJI;
     public final static String CAT_SHELTER_SELECT_TEXT = "Вы выбрали приют для кошек" + " " + CAT_EMOJI + " " + " чем мы можем помочь? ";
     public final static String DOG_SHELTER_SELECT_TEXT = "Вы выбрали приют для собак" + " " + DOG_EMOJI + " " + " чем мы можем помочь? ";
     public final static String ABOUT_CAT_SHELTER_TEXT = "Здесь будет храниться информация о приюте для кошек";
