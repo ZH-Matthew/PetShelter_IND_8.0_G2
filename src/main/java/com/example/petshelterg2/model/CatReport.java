@@ -21,8 +21,8 @@ public class CatReport {
     private String info;
 
 
-    @ManyToOne
-    @JoinColumn(name = "chatId")
-    private CatOwners catOwners;
+//    @ManyToOne
+//    @JoinColumn(name = "chatId")
+//    private CatOwners catOwners;
 
 }
