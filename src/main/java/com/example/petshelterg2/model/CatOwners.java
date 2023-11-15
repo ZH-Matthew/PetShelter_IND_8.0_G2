@@ -2,11 +2,14 @@ package com.example.petshelterg2.model;
 
 //класс для информации о пользователях кошек
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Set;
+@Data
 @Entity(name = "CatOwners")
 public class CatOwners {
     @Id
@@ -24,6 +27,6 @@ public class CatOwners {
 //    и еще пару методов которые добавляют 14 или 30 дней к испытательному сроку
     private LocalDateTime dateTime;
 
-    @OneToMany(mappedBy = "catOwners")
-    private Set<CatReport> catReports;
+//    @OneToMany(mappedBy = "catOwners")
+//    private Set<CatReport> catReports;
 }

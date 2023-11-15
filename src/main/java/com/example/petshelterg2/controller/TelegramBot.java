@@ -1,6 +1,6 @@
 package com.example.petshelterg2.controller;
-
 import com.example.petshelterg2.config.BotConfig;
+import com.example.petshelterg2.model.CatOwners;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +10,12 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 import static com.example.petshelterg2.constants.Constants.*;
 import static com.example.petshelterg2.constants.Constants.RECOMMENDATIONS_HOME_BUTTON1_DOG;
@@ -56,6 +57,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
+        if (update.getMessage().getContact()!= null){   //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
+            saveOwner(update);                          //вызывает метод сохранения пользователя
+        }
 
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
@@ -96,7 +100,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     tipsFromDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
-                    callAVolunteer(chatId,update.getMessage().getChat().getUserName());
+                    callAVolunteer(chatId, update.getMessage().getChat().getUserName());
                     break;
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
@@ -106,7 +110,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             }
         }
     }
-
 
     //метод для приветственного сообщения
     private void startCommand(long chatId, String name) {
@@ -236,7 +239,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(CONTACT_WITH_ME_BUTTON);
+        KeyboardButton keyboardButton = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButton.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
+        keyboardButton.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+        row.add(keyboardButton);                                //добавил кнопку в клавиатуру
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -402,5 +408,24 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void showAdminChatId(Update update) { //метод выводит в лог консоли ChatId админа, если была написана команда "сохранить админа"
         Long chatId = update.getMessage().getChatId();
         log.info("ADMIN CHAT_ID: " + chatId);
+    }
+
+    private void saveOwner(Update update) {                                     //метод сохранения пользователя в БД (пока что в базу с кошками)
+        Long chatId = update.getMessage().getChatId();
+        String firstName = update.getMessage().getChat().getFirstName();
+        String lastName = update.getMessage().getChat().getLastName();
+        String userName = update.getMessage().getChat().getUserName();
+        String phoneNumber = update.getMessage().getContact().getPhoneNumber();
+        java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+
+        CatOwners catOwner = new CatOwners();
+        catOwner.setUserName(userName);
+        catOwner.setChatId(chatId);
+        catOwner.setFirstName(firstName);
+        catOwner.setLastName(lastName);
+        catOwner.setPhoneNumber(phoneNumber);
+        catOwner.setDateTime(currentDateTime);
+        catOwnersRepository.save(catOwner);
+        log.info("contact saved "+ catOwner);
     }
 }
