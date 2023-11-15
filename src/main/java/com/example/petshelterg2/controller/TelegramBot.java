@@ -432,6 +432,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         String userName = update.getMessage().getChat().getUserName();
         String phoneNumber = update.getMessage().getContact().getPhoneNumber();
         java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+        String status = "необходимо связаться";
 
         CatOwners catOwner = new CatOwners();
         catOwner.setUserName(userName);
@@ -440,6 +441,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         catOwner.setLastName(lastName);
         catOwner.setPhoneNumber(phoneNumber);
         catOwner.setDateTime(currentDateTime);
+        catOwner.setStatus(status);
         catOwnersRepository.save(catOwner);
         log.info("contact saved " + catOwner);
     }
@@ -451,6 +453,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         String userName = update.getMessage().getChat().getUserName();
         String phoneNumber = update.getMessage().getContact().getPhoneNumber();
         java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+        String status = "необходимо связаться";
 
         DogOwners dogOwner = new DogOwners();
         dogOwner.setUserName(userName);
@@ -459,6 +462,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         dogOwner.setLastName(lastName);
         dogOwner.setPhoneNumber(phoneNumber);
         dogOwner.setDateTime(currentDateTime);
+        dogOwner.setStatus(status);
         dogOwnersRepository.save(dogOwner);
         log.info("contact saved " + dogOwner);
     }

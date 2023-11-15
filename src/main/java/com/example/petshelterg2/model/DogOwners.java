@@ -27,6 +27,7 @@ public class DogOwners {
 //    скорее всего нужно будет добавить метод по шедулду который проверяет наступил ли этот день или нет, и если да, отправляет сообщения о прохождении
 //    и еще пару методов которые добавляют 14 или 30 дней к испытательному сроку
     private LocalDateTime dateTime;
+    private String status;
 
 //    @OneToMany(mappedBy = "dogOwners")
 //    private Set<DogReport> dogReports;
