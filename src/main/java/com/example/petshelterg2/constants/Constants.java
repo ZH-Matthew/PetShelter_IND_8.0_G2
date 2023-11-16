@@ -16,6 +16,7 @@ public class Constants {
     public final static String PHONE_EMOJI = "\uD83D\uDCDE";
     public final static String BACK_EMOJI = "⏩";
     public final static String HOME_EMOJI = "\uD83C\uDFDA";
+    public final static String SAVE_EMOJI = "\uD83D\uDCBE";
 
     // messages
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START =
@@ -55,6 +56,7 @@ public class Constants {
     public final static String VOLUNTEER_MESSAGE = "Пользователю требуется помощь! \n t.me/";
     public final static String SAVE_ADMIN = "Сохранить админа";
     public final static String VOLUNTEER_WILL_WRITE_TO_YOU = "Волонтёр получил уведомление и скоро вам напишет!";
+    public final static String DATA_SAVED = "Данные сохранены" + " " + SAVE_EMOJI;
     //buttons
     public final static String MAIN_MAIN = "Вернуться в главное меню" + " " + BACK_EMOJI;
     public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;
