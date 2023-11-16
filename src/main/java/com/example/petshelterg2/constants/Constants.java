@@ -18,7 +18,21 @@ public class Constants {
     public final static String HOME_EMOJI = "\uD83C\uDFDA";
 
     // messages
-    public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START = "Привет, %s, твой будущий питомец скучает по тебе!" + " " + BLUSH_EMOJI + " Выберите приют ";
+    public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START =
+            "Привет!" + BLUSH_EMOJI +" \n "+
+            "\n " +
+            "Я бот приюта для домашних животных! \n " +
+            "\n " +
+            "Моя цель - внести в твой мир хаос, " +
+            "суету и бессонные ночи, а точнее - " +
+            "помочь тебе забрать мохнатого из приюта! \n"+
+            "\n " +
+            "Я с радостью предоставлю информацию о приюте, "+
+            "дам советы по уходу за мохнатым, "+
+            "расскажу как забрать ушастого из приюта, "+
+            "а также помогу с ежедневными отчётами \n"+
+            "\n " +
+            " Для начала выбери приют: ";
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT = "Снова здравствуйте, %s, выберите приют, ваc ждет питомец!" + " " + BLUSH_EMOJI;
     public final static String CAT_SHELTER_SELECT_TEXT = "Вы выбрали приют для кошек" + " " + CAT_EMOJI + " " + " чем мы можем помочь? ";
     public final static String DOG_SHELTER_SELECT_TEXT = "Вы выбрали приют для собак" + " " + DOG_EMOJI + " " + " чем мы можем помочь? ";
