@@ -67,8 +67,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.getMessage().getContact() != null) {         //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
             if (choosingAShelter) {
                 saveDogOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам собак
+                prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
             } else {
                 saveCatOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам кошек
+                prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
             }
         }
 
