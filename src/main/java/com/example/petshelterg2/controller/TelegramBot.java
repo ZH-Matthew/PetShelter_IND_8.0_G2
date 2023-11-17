@@ -126,6 +126,24 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case SECURITY_CONTACTS_BUTTON_DOG:
                     dogShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case RULES_FOR_GETTING_KNOW_CAT:
+                    safetyNotesRulesForFirstMetCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RULES_FOR_GETTING_KNOW_DOG:
+                    safetyNotesRulesForFirstMetDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case LIST_DOCUMENTS_TAKE_ANIMAL_DOG:
+                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case LIST_DOCUMENTS_TAKE_ANIMAL_CAT:
+                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_TRANSPORTATION_CAT:
+                    transportingRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_TRANSPORTATION_DOG:
+                    transportingRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case SAFETY_NOTES_BUTTON_CAT:
                     safetyNotesCat(chatId, update.getMessage().getChat().getFirstName());
                     break;
@@ -283,6 +301,26 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
     private void safetyNotesCat(long chatId, String name) {
         prepareAndSendMessage(chatId, SAFETY_NOTES_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void safetyNotesRulesForFirstMetCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void safetyNotesRulesForFirstMetDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_DOG);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void listOfDocumentsForAdoption(long chatId, String name) {
+        prepareAndSendMessage(chatId, LIST_OF_DOCUMENTS_FOR_ADOPTION);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void transportingRecommendationsCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void transportingRecommendationsDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
