@@ -168,8 +168,17 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case SAFETY_NOTES_BUTTON_DOG:
                     safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG:
+                    safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_FURTHER_REFERENCE_THEM:
+                    initialDogHandlerAdvice(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
+                    dogHandlerRecommendation(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case CALL_VOLUNTEER_BUTTON:
-                    callAVolunteer(chatId, update.getMessage().getChat().getUserName());
+                    refusalReasonsList(chatId, update.getMessage().getChat().getUserName());
                     break;
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
@@ -291,7 +300,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void tipsFromDog(long chatId, String name) { //переход в меню советы кинолога и почему могут отказать забрать собаку из приюта
-        prepareAndSendMessageAndKeyboard(chatId, TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL, tipsFromDogKeyboard());
+        prepareAndSendMessageAndKeyboard(chatId, TIPS_DOG_HANDLER, tipsFromDogKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -363,6 +372,18 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
     private void arrangingHomeRecommendationsDisabledDog(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_DOG);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void initialDogHandlerAdvice(long chatId, String name) {
+        prepareAndSendMessage(chatId, INITIAL_DOG_HANDLER_ADVICE);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void dogHandlerRecommendation(long chatId, String name) {
+        prepareAndSendMessage(chatId, DOG_HANDLER_RECOMMENDATION);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void refusalReasonsList(long chatId, String name) {
+        prepareAndSendMessage(chatId, REFUSAL_REASONS_LIST);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 

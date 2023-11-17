@@ -17,6 +17,7 @@ public class Constants {
     public final static String BACK_EMOJI = "⏩";
     public final static String HOME_EMOJI = "\uD83C\uDFDA";
     public final static String SAVE_EMOJI = "\uD83D\uDCBE";
+    public final static String STOP_EMOJI = "❌";
 
     // messages
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START =
@@ -139,7 +140,7 @@ public class Constants {
             "Когда вы сделали свой выбор, подготовьте квартиру к приезду нового жильца.";
     public final static String RULES_FOR_FIRST_MET_DOG = "Мы приветствуем, когда к нам приезжают в гости и помогают с уходом за животными. " +
             "Поездите несколько раз к нам и заодно познакомитесь с местными обитателями.\n" +
-            "\n" +"Что касается того, какую собаку выбрать, то тут советы давать трудно. " +
+            "\n" + "Что касается того, какую собаку выбрать, то тут советы давать трудно. " +
             "Все зависит от обстоятельств и пожеланий. " +
             "Возможен и такой вариант: вы увидели подопечного приюта и поняли, что это - ваш будущий любимец. " +
             "И все же рекомендуется выбрать щенка, если у вас никогда не было домашних животных, ведь его будет легче воспитать «с нуля», " +
@@ -213,7 +214,7 @@ public class Constants {
             "\n" +
             "Обратите внимание. Если используете чехлы (гамаки) для защиты салона от шерсти или перевозите собаку в пластиковом контейнере-переноске, выбирайте модель с прорезями для ремней безопасности.\n" +
             "\n" +
-            "Как подготовиться к поездке\n"+
+            "Как подготовиться к поездке\n" +
             "Не кормите собаку перед поездкой. Интервал между последним кормлением и поездкой на автомобиле должен составлять не менее 4 часов. " +
             "В противном случае собаку начнет тошнить, и вам придется постоянно останавливаться. Обратите внимание. " +
             "Если везете в машине щенка, застелите пол или дно переноски впитывающей пеленкой.\n" +
@@ -405,13 +406,59 @@ public class Constants {
             "Хорошая идея для улучшения качества жизни любимца - это компания другой собаки. " +
             "В зарубежных странах для слепых собак даже воспитывают специальных собак-поводырей. " +
             "Но и обычный питомец с уравновешенным нравом может поспособствовать хорошему самочувствию слепого питомца.\n";
-    public final static String INITIAL_DOG_HANDLER_ADVICE = "Советы кинолога по первичному общению с собакой";
-    public final static String DOG_HANDLER_RECOMMENDATION = "Рекомендации по проверенным кинологам для дальнейшего обращения к ним";
-    public final static String REFUSAL_REASONS_LIST = "Список причин, почему могут отказать и не дать забрать собаку из приюта";
+    public final static String INITIAL_DOG_HANDLER_ADVICE = "Полезные советы для первой встречи с собакой\n" +
+            "Эти советы всегда следует соблюдать при первой встрече с незнакомой собакой:\n" +
+            "Всегда подходите к собаке сбоку, никогда не подходите спереди или сзади, чтобы избежать внезапных сюрпризов, " +
+            "которые могут вызвать у собаки чрезмерный стресс.\n" +
+            "Избегайте пристального взгляда, так как это может быть воспринято как агрессивный жест.\n" +
+            "Не принимайте напряженную позу. Всегда оставайтесь спокойными и расслабленными.\n" +
+            "Подождите, пока собака подойдет к вам и сделает первый шаг. Собака либо выйдет вперед, либо просто будет избегать вас.\n" +
+            "Если собака радостно виляет хвостом\n" +
+            "Собаки обладают развитым обонянием, поэтому оставайтесь в расслабленном положении и позвольте ей провести все необходимые проверки, " +
+            "чтобы привыкнуть к встрече с новым человеком.\n" +
+            "Если у собаки есть хозяин, всегда спрашивайте разрешения погладить ее.\n" +
+            "Погладьте собаку по плечам и груди. Таким образом, собака сможет контролировать ваши руки и не будет бояться.\n" +
+            "Если собака агрессивна, рычит или лает\n" +
+            "Не убегайте! Это вызовет у собаки инстинкт хищника и даст ей чувство превосходства.\n" +
+            "Не кричите и не делайте резких движений. Старайтесь изо всех сил сохранять спокойствие, не двигаться и избегать зрительного контакта\n" +
+            "Запомните эти полезные советы. Несмотря на то, что собаки в основном мирные животные, но не все одинаковые. " +
+            "У каждой собаки свой характер и жизненный опыт. Поэтому было бы уместно попытаться понять по поведению собаки, хочет ли она, " +
+            "чтобы мы и другие люди подходили к ней и ласкали ее.\n" +
+            "Поддержка владельца и его новой собаки";
+    public final static String DOG_HANDLER_RECOMMENDATION = "Собаки, которые долгое время живут с хозяином, " +
+            "считывают малейшие сигналы языка человеческого тела: позы, жесты, изменения тембра голоса. " +
+            "Президент Российской кинологической федерации Владимир Голубев рассказал, как питомцы воспринимают речь человека и нужны ли специальные фразы, " +
+            "чтобы собака поняла хозяина.\n" +
+            "Собаки воспринимают человеческую речь не как абстрактные понятия. Для них слова – это команды, побуждающие к какому-либо конкретному действию: например, стой, подойди, отдай. Свою кличку собака также воспринимает как команду. Когда хозяин произносит имя питомца – это звучит как просьба для животного обратить внимание на хозяина.  \n" +
+            "\n" +
+            "Важно наладить с собакой взаимопонимание. Когда питомец не понимает или не знает, " +
+            "что от него хотят, это может приводить его к стрессовому состоянию, либо он перестанет реагировать на команды. " +
+            "Поэтому важно внятно показывать питомцу, что от него ждут.  Всякий раз, когда собака демонстрирует правильное действие, " +
+            "следует поощрять его лакомством и поглаживанием. Чем чаще слова-команды будут использоваться в привычной жизни собаки, " +
+            "тем скорее и лучше усвоятся правильные действия.\n" +
+            "Общаться с собакой необходимо спокойным, дружелюбным голосом. Запрещающие команды достаточно произносить громче, " +
+            "но ни в коем случае не стоит кричать на животное. Такое общение только напугает питомца.\n" +
+            "\n" +
+            "Кинолог отметил, что собака – зеркало человека, она с легкостью считывает настроение хозяина и перенимает его. " +
+            "С питомцем хозяину нужно быть спокойным, предсказуемым, не кричать на него. Для собаки нужно устанавливать правила, " +
+            "разучивать новые команды, поощрять и уделять достаточное количество времени на общение. ";
+    public final static String REFUSAL_REASONS_LIST = "Причины, по которым приют может отказывать вам в том, чтобы забрать животное\n" +
+            "1) отказ обеспечить безопасность питомца на новом месте.\n" +
+            "2) нестабильные отношения в семье" +
+            "3) антинаучное мышление" +
+            "4) наличие дома большого количества животных." +
+            "5) маленькие дети в семье" +
+            "6) аллергия" +
+            "7) животное забирают в подарок кому-то" +
+            "8) животное забирают в целях использования его рабочих качеств" +
+            "9) отказ приехать познакомиться с животным" +
+            "10) претендент — пожилой человек, проживающий один" +
+            "11) отсутствие регистрации и собственного жилья или его несоответствие нормам приюта";
     public final static String VOLUNTEER_MESSAGE = "Пользователю требуется помощь! \n t.me/";
     public final static String SAVE_ADMIN = "Сохранить админа";
     public final static String VOLUNTEER_WILL_WRITE_TO_YOU = "Волонтёр получил уведомление и скоро вам напишет!";
     public final static String DATA_SAVED = "Данные сохранены" + " " + SAVE_EMOJI;
+    public final static String TIPS_DOG_HANDLER = "Выберите \"Советы по общению с пёсиком\" или \"почему вам могут отказать\"" ;
     //buttons
     public final static String MAIN_MAIN = "Вернуться в главное меню" + " " + BACK_EMOJI;
     public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;
@@ -424,7 +471,7 @@ public class Constants {
     public final static String ABOUT_SHELTER_BUTTON_CAT = "Информация о приюте кошек" + " " + SHELTER_EMOJI;
     public final static String SHELTER_SCHEDULE_BUTTON_CAT = "Адрес и график работы приюта кошек" + " " + SCHEDULE_EMOJI;
     public final static String SECURITY_CONTACTS_BUTTON_CAT = "Контакты охраны приюта кошек" + " " + GUARD_EMOJI;
-    public final static String SAFETY_NOTES_BUTTON_CAT = "Техника безопасности в приюте кошек";
+    public final static String SAFETY_NOTES_BUTTON_CAT = "Техника безопасности в приюте кошек" + CAT_EMOJI;
     public final static String ABOUT_SHELTER_BUTTON_DOG = "Информация о приюте собак" + " " + SHELTER_EMOJI;
     public final static String SHELTER_SCHEDULE_BUTTON_DOG = "Адрес и график работы приюта собак" + " " + SCHEDULE_EMOJI;
     public final static String SECURITY_CONTACTS_BUTTON_DOG = "Контакты охраны приюта собак" + " " + GUARD_EMOJI;
@@ -436,17 +483,17 @@ public class Constants {
     public final static String RECOMMENDATIONS_TRANSPORTATION_DOG = "Рекомендаций по транспортировке" + " " + DOG_EMOJI;
     public final static String RECOMMENDATIONS_HOME_BUTTON1_CAT = "Pекомендации по обустройству дома" + " " + CAT_EMOJI;
     public final static String RECOMMENDATIONS_HOME_BUTTON1_DOG = "Рекомендации по обустройству дома" + " " + DOG_EMOJI;
-    public final static String RECOMMENDATIONS_HOME_KITTY = HOME_EMOJI +  "для котёнка" + CAT_EMOJI;
-    public final static String RECOMMENDATIONS_HOME_PUPPY =  HOME_EMOJI + " для щенка " + DOG_EMOJI;
-    public final static String RECOMMENDATIONS_HOME_BUTTON2_CAT =  HOME_EMOJI + " для взрослого" + CAT_EMOJI;
-    public final static String RECOMMENDATIONS_HOME_BUTTON2_DOG =  HOME_EMOJI + " для взрослого " + DOG_EMOJI;
-    public final static String RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES =  HOME_EMOJI + " для " + CAT_EMOJI + " c ОВЗ";
-    public final static String RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES =  HOME_EMOJI + " для " + DOG_EMOJI + " c ОВЗ";
+    public final static String RECOMMENDATIONS_HOME_KITTY = HOME_EMOJI + "для котёнка" + CAT_EMOJI;
+    public final static String RECOMMENDATIONS_HOME_PUPPY = HOME_EMOJI + " для щенка " + DOG_EMOJI;
+    public final static String RECOMMENDATIONS_HOME_BUTTON2_CAT = HOME_EMOJI + " для взрослого" + CAT_EMOJI;
+    public final static String RECOMMENDATIONS_HOME_BUTTON2_DOG = HOME_EMOJI + " для взрослого " + DOG_EMOJI;
+    public final static String RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES = HOME_EMOJI + " для " + CAT_EMOJI + " c ОВЗ";
+    public final static String RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES = HOME_EMOJI + " для " + DOG_EMOJI + " c ОВЗ";
     public final static String TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL = "Советы кинолога и почему вам могут отказать " + DOG_EMOJI;
-    public final static String TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG = "Советы кинолога по первичному общению с собакой ";
-    public final static String RECOMMENDATIONS_FURTHER_REFERENCE_THEM = "Рекомендации по проверенным кинологам для дальнейшего обращения к ним ";
-    public final static String LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG = "Список причин, почему могут отказать и не дать забрать собаку из приюта ";
-    public final static String SAFETY_NOTES_BUTTON_DOG = "Техника безопасности в приюте собак";
+    public final static String TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG = "Советы по первому общению с " + DOG_EMOJI;
+    public final static String RECOMMENDATIONS_FURTHER_REFERENCE_THEM = "Советы по общению с " + DOG_EMOJI;
+    public final static String LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG = "Список причин для отказа" + STOP_EMOJI;
+    public final static String SAFETY_NOTES_BUTTON_DOG = "Техника безопасности в приюте собак" + DOG_EMOJI;
     public final static String CONTACT_WITH_ME_BUTTON = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи.
 
 
