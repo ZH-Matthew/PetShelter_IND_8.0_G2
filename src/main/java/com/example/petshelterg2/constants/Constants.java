@@ -19,7 +19,11 @@ public class Constants {
     public final static String SAVE_EMOJI = "\uD83D\uDCBE";
     public final static String STOP_EMOJI = "❌";
 
+    public final static String OUTBOX = "\uD83D\uDCE4";
+
     // messages
+
+    public final static String SHARE_PHONE_NUMBER = "Поделиться номером телефона " + OUTBOX;
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START =
             "Привет!" + BLUSH_EMOJI + " \n " +
                     "\n " +
@@ -494,7 +498,8 @@ public class Constants {
     public final static String RECOMMENDATIONS_FURTHER_REFERENCE_THEM = "Советы по общению с " + DOG_EMOJI;
     public final static String LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG = "Список причин для отказа" + STOP_EMOJI;
     public final static String SAFETY_NOTES_BUTTON_DOG = "Техника безопасности в приюте собак" + DOG_EMOJI;
-    public final static String CONTACT_WITH_ME_BUTTON = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи.
+    public final static String CONTACT_WITH_ME_BUTTON_CAT = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи (приют кошек)
+    public final static String CONTACT_WITH_ME_BUTTON_DOG = "Oставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи (приют собак)
 
 
 }

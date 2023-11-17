@@ -12,6 +12,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -176,6 +177,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     break;
                 case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
                     refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case CONTACT_WITH_ME_BUTTON_CAT:
+                    saveContactCatOwner(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case CONTACT_WITH_ME_BUTTON_DOG:
+                    saveContactDogOwner(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
@@ -386,6 +393,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         prepareAndSendMessage(chatId, REFUSAL_REASONS_LIST);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+    private void saveContactCatOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД кошек
+        prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_CAT, saveContactCatOwnerKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void saveContactDogOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД собак
+        prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_DOG, saveContactDogOwnerKeyboard());
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
 
     /**
      * Метод собирает стартовую клавиатуру <p>
@@ -410,13 +425,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     /**
      * Метод создает клавиатуру для собачено приюта <p>
      * Кнопка: <p>
-     * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON} <p>
+     * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON_DOG} <p>
      * Является функциональной и запрашивает контакт у пользователя
      *
      * @return <b>ReplyKeyboardMarkup</b>
      */
     private ReplyKeyboardMarkup dogShelterKeyboard() {
-        choosingAShelter = true;
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
@@ -427,28 +441,25 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        KeyboardButton keyboardButtonDog = new KeyboardButton();   //создал функциональную кнопку
-        keyboardButtonDog.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
-        keyboardButtonDog.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
-        row.add(keyboardButtonDog);                                //добавил кнопку в клавиатуру
+        row.add(CONTACT_WITH_ME_BUTTON_DOG);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
 
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
+
     }
 
     /**
      * Метод создает клавиатуру для кошачьего приюта <p>
      * Кнопка: <p>
-     * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON} <p>
+     * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON_CAT} <p>
      * Является функциональной и запрашивает контакт у пользователя
      *
      * @return <b>ReplyKeyboardMarkup</b>
      */
     private ReplyKeyboardMarkup catShelterKeyboard() {
-        choosingAShelter = false;
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
 
@@ -459,10 +470,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
-        keyboardButtonCat.setText(CONTACT_WITH_ME_BUTTON);         //добавил в кнопку отображаемый текст
-        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
-        row.add(keyboardButtonCat);                                //добавил кнопку в клавиатуру
+        row.add(CONTACT_WITH_ME_BUTTON_CAT);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -604,6 +612,42 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
         row = new KeyboardRow();
         row.add(CALL_VOLUNTEER_BUTTON);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup saveContactCatOwnerKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        choosingAShelter = false;
+
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonCat.setText(SHARE_PHONE_NUMBER);                   //добавил в кнопку отображаемый текст
+        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+        row.add(keyboardButtonCat);
+        row.add(MAIN_MAIN);
+        keyboardRows.add(row);
+
+        keyboardMarkup.setKeyboard(keyboardRows);
+        return keyboardMarkup;
+    }
+
+    private ReplyKeyboardMarkup saveContactDogOwnerKeyboard() {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        choosingAShelter = true;
+
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonCat.setText(SHARE_PHONE_NUMBER);                   //добавил в кнопку отображаемый текст
+        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+        row.add(keyboardButtonCat);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
 
