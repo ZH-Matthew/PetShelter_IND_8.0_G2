@@ -169,16 +169,16 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG:
-                    safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
-                    break;
-                case RECOMMENDATIONS_FURTHER_REFERENCE_THEM:
                     initialDogHandlerAdvice(chatId, update.getMessage().getChat().getFirstName());
                     break;
-                case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
+                case RECOMMENDATIONS_FURTHER_REFERENCE_THEM:
                     dogHandlerRecommendation(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
+                    refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case CALL_VOLUNTEER_BUTTON:
-                    refusalReasonsList(chatId, update.getMessage().getChat().getUserName());
+                    callAVolunteer(chatId, update.getMessage().getChat().getUserName());
                     break;
                 case SAVE_ADMIN: //показывает CHAT_ID в логи консоли (никуда не сохраняет данные)
                     showAdminChatId(update);
