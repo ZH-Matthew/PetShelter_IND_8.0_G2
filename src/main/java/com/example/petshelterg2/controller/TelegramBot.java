@@ -144,6 +144,24 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case RECOMMENDATIONS_TRANSPORTATION_DOG:
                     transportingRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case RECOMMENDATIONS_HOME_KITTY:
+                    arrangingHomeRecommendationsKitty(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_PUPPY:
+                    arrangingHomeRecommendationsPuppy(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_BUTTON2_CAT:
+                    arrangingHomeRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_BUTTON2_DOG:
+                    arrangingHomeRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES:
+                    arrangingHomeRecommendationsDisabledCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES:
+                    arrangingHomeRecommendationsDisabledDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case SAFETY_NOTES_BUTTON_CAT:
                     safetyNotesCat(chatId, update.getMessage().getChat().getFirstName());
                     break;
@@ -263,12 +281,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void recommendationsHomeDog(long chatId, String name) { //переход в меню обустройство дома для собаки
-        prepareAndSendMessageAndKeyboard(chatId, RECOMMENDATIONS_HOME_BUTTON2_DOG, recommendationsHomeDogKeyboard());
+        prepareAndSendMessageAndKeyboard(chatId, ARRANGING_HOME_RECOMMENDATIONS, recommendationsHomeDogKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private void recommendationsHomeCat(long chatId, String name) { //переход в меню обустройство дома кошки
-        prepareAndSendMessageAndKeyboard(chatId, RECOMMENDATIONS_HOME_BUTTON2_CAT, recommendationsHomeCatKeyboard());
+        prepareAndSendMessageAndKeyboard(chatId, ARRANGING_HOME_RECOMMENDATIONS, recommendationsHomeCatKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -321,6 +339,30 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
     private void transportingRecommendationsDog(long chatId, String name) {
         prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_DOG);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsKitty(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_KITTY);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsPuppy(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_PUPPY);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DOG);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsDisabledCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void arrangingHomeRecommendationsDisabledDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
