@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.example.petshelterg2.constants.Constants.*;
 
 @Slf4j //из библиотеки lombok реализует логирование через переменную log.
@@ -52,13 +53,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     /**
      * Единственная задача метода: <p>
      * Запросить из {@link BotConfig} значение <b>ownerId</b>
+     *
      * @return String (chatID админа/волонтёра)
      */
     public String getBotOwnerId() {
         return config.getOwnerId();
     }
 
-    public boolean choosingAShelter; //переменная выбора приюта кошки - false (0) , собаки true (1)
+    public boolean choosingAShelter; //переменная выбора приюта кошки - false (0), собаки true (1)
 
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
@@ -109,8 +111,26 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case RECOMMENDATIONS_HOME_BUTTON1_DOG:
                     recommendationsHomeDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case SHELTER_SCHEDULE_BUTTON_CAT:
+                    catShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL:
                     tipsFromDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SHELTER_SCHEDULE_BUTTON_DOG:
+                    dogShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SECURITY_CONTACTS_BUTTON_CAT:
+                    catShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SECURITY_CONTACTS_BUTTON_DOG:
+                    dogShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SAFETY_NOTES_BUTTON_CAT:
+                    safetyNotesCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SAFETY_NOTES_BUTTON_DOG:
+                    safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
@@ -128,8 +148,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Метод обрабатывающий команду <b>/start</b>
      * <p>
      * Собирает текст ответа и отправляет его в метод: {@link TelegramBot#prepareAndSendMessageAndKeyboard(long, String, ReplyKeyboardMarkup)}
+     *
      * @param chatId (ID чата пользователя)
-     * @param name (имя пользователя)
+     * @param name   (имя пользователя)
      */
     private void startCommand(long chatId, String name) {
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
@@ -143,8 +164,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Метод подготовки и отправки сообщения пользователю
      * <b><u>Вместе с клавиатурой!</u></b> <p>
      * Собирает сообщение вместе с клавиатурой и дергает метод отправки: {@link TelegramBot#executeMessage(SendMessage)}
-     * @param chatId (ID чата пользователя)
-     * @param textToSend (текст для отправки пользователю)
+     *
+     * @param chatId         (ID чата пользователя)
+     * @param textToSend     (текст для отправки пользователю)
      * @param keyboardMarkup (клавиатура)
      */
     private void prepareAndSendMessageAndKeyboard(long chatId, String textToSend, ReplyKeyboardMarkup keyboardMarkup) {
@@ -160,7 +182,8 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Метод подготовки и отправки сообщения пользователю <p>
      * <b><u>Без клавиатуры!</u></b> <p>
      * Собирает сообщение и дергает метод отправки: {@link TelegramBot#executeMessage(SendMessage)}
-     * @param chatId (ID чата пользователя)
+     *
+     * @param chatId     (ID чата пользователя)
      * @param textToSend (текст для отправки пользователю)
      */
     private void prepareAndSendMessage(long chatId, String textToSend) {
@@ -173,8 +196,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     /**
      * Точечный метод отправки сообщения <p>
      * Главная задача метода: принять собранный message и отправить его клиенту
+     *
      * @param message (заранее собранный message с chatID пользователя и текстом сообщения)
-     * {@link TelegramApiException} обрабатывается через try/catch внутри метода
+     *                {@link TelegramApiException} обрабатывается через try/catch внутри метода
      */
     private void executeMessage(SendMessage message) {
         try {
@@ -211,12 +235,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void takeAnCat(long chatId, String name) { //переход в меню как взять кошку из приюта
-        prepareAndSendMessageAndKeyboard(chatId, SHELTER_SECOND_STEP_BUTTON_CAT, takeAnCatShelterKeyboard());
+        prepareAndSendMessageAndKeyboard(chatId, CAT_TAKING_ANIMAL_FROM_SHELTER, takeAnCatShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private void takeAnDog(long chatId, String name) { //переход в меню как взять собаку из приюта
-        prepareAndSendMessageAndKeyboard(chatId, SHELTER_SECOND_STEP_BUTTON_DOG, takeAnDogShelterKeyboard());
+        prepareAndSendMessageAndKeyboard(chatId, DOG_TAKING_ANIMAL_FROM_SHELTER, takeAnDogShelterKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -235,11 +259,39 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
+    private void catShelterWork(long chatId, String name) {
+        prepareAndSendMessage(chatId, CAT_SHELTER_WORK_SCHEDULE);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void dogShelterWork(long chatId, String name) {
+        prepareAndSendMessage(chatId, DOG_SHELTER_WORK_SCHEDULE);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void catShelterSecurityContacts(long chatId, String name) {
+        prepareAndSendMessage(chatId, CAT_SHELTER_SECURITY_CONTACTS);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void dogShelterSecurityContacts(long chatId, String name) {
+        prepareAndSendMessage(chatId, DOG_SHELTER_SECURITY_CONTACTS);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void safetyNotesDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, SAFETY_NOTES_DOG);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+    private void safetyNotesCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, SAFETY_NOTES_CAT);
+        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
     /**
      * Метод собирает стартовую клавиатуру <p>
      * Реализуя две кнопки на основе: <p>
      * {@link com.example.petshelterg2.constants.Constants#CAT_SHELTER_BUTTON} <p>
      * {@link com.example.petshelterg2.constants.Constants#DOG_SHELTER_BUTTON} <p>
+     *
      * @return <b>ReplyKeyboardMarkup</b> (собранная клавиатура)
      */
     private ReplyKeyboardMarkup startKeyboard() {
@@ -259,6 +311,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Кнопка: <p>
      * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON} <p>
      * Является функциональной и запрашивает контакт у пользователя
+     *
      * @return <b>ReplyKeyboardMarkup</b>
      */
     private ReplyKeyboardMarkup dogShelterKeyboard() {
@@ -290,6 +343,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Кнопка: <p>
      * {@value  com.example.petshelterg2.constants.Constants#CONTACT_WITH_ME_BUTTON} <p>
      * Является функциональной и запрашивает контакт у пользователя
+     *
      * @return <b>ReplyKeyboardMarkup</b>
      */
     private ReplyKeyboardMarkup catShelterKeyboard() {
@@ -458,12 +512,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     /**
      * Метод для вызова волонтера <p>
-     * Cуть метода: отправить волонтёру в личку ссылку на пользователя чтобы волонтёр законнектил чаты и начал общение)<p>
+     * Суть метода: отправить волонтёру в личку ссылку на пользователя чтобы волонтёр законнектил чаты и начал общение)<p>
      * Метод дергает {@link #getBotOwnerId()}
      * Отправляет два сообщения: <p>
      * Одно волонтёру со ссылкой на чат клиента <p>
-     * Второе клиенту, с уведомлением о том , что ему скоро напишут
-     * @param chatId (chatID пользователя)
+     * Второе клиенту, с уведомлением о том, что ему скоро напишут
+     *
+     * @param chatId   (chatID пользователя)
      * @param userName (никнейм пользователя)
      */
     private void callAVolunteer(long chatId, String userName) {
@@ -483,6 +538,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
      * Технический метод не для пользователей <p>
      * Метод выводит в лог консоли ChatId админа, если была написана команда "сохранить админа" <p>
      * После этого из лога можно сохранить ChatId в application.properties
+     *
      * @param update
      */
     private void showAdminChatId(Update update) {
@@ -493,6 +549,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     /**
      * Метод сохранения пользователя в БД (с кошками):<p>
      * {@link CatOwners}
+     *
      * @param update
      */
     private void saveCatOwner(Update update) {
@@ -519,6 +576,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     /**
      * Метод сохранения пользователя в БД (с собаками):<p>
      * {@link DogOwners}
+     *
      * @param update
      */
     private void saveDogOwner(Update update) {
