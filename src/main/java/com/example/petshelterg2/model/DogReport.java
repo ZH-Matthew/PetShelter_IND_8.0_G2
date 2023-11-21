@@ -9,18 +9,11 @@ public class DogReport {
     @GeneratedValue
     private Long id;
 
-    private String filePath;
-    private long fileSize;
-    private String mediaType;
-    private byte[] data;
+    private String diet;//    - *Рацион животного.*
+    private String wellBeingAndAdaptation;//    - *Общее самочувствие и привыкание к новому месту.*
+    private String ChangesBehavior;//    - *Изменение в поведении: отказ от старых привычек, приобретение новых.*
 
-    //текстовая информация о:
-//    - *Рацион животного.*
-//    - *Общее самочувствие и привыкание к новому месту.*
-//    - *Изменение в поведении: отказ от старых привычек, приобретение новых.*
-    private String info;
-
-//    @ManyToOne
-//    @JoinColumn(name = "chatId")
-//    private DogOwners dogOwners;
+    @ManyToOne
+    @JoinColumn(name = "chatId")
+    private DogOwners dogOwners;
 }
