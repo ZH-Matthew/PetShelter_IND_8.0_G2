@@ -3,10 +3,12 @@ package com.example.petshelterg2.controller;
 import com.example.petshelterg2.config.BotConfig;
 import com.example.petshelterg2.model.CatOwners;
 import com.example.petshelterg2.model.DogOwners;
+import com.example.petshelterg2.model.Probation;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -325,78 +329,97 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         prepareAndSendMessage(chatId, CAT_SHELTER_SECURITY_CONTACTS);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void dogShelterSecurityContacts(long chatId, String name) {
         prepareAndSendMessage(chatId, DOG_SHELTER_SECURITY_CONTACTS);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void safetyNotesDog(long chatId, String name) {
         prepareAndSendMessage(chatId, SAFETY_NOTES_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void safetyNotesCat(long chatId, String name) {
         prepareAndSendMessage(chatId, SAFETY_NOTES_CAT);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void safetyNotesRulesForFirstMetCat(long chatId, String name) {
         prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_CAT);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void safetyNotesRulesForFirstMetDog(long chatId, String name) {
         prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void listOfDocumentsForAdoption(long chatId, String name) {
         prepareAndSendMessage(chatId, LIST_OF_DOCUMENTS_FOR_ADOPTION);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void transportingRecommendationsCat(long chatId, String name) {
         prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_CAT);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void transportingRecommendationsDog(long chatId, String name) {
         prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsKitty(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_KITTY);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsPuppy(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_PUPPY);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsCat(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_CAT);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsDog(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsDisabledCat(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_CAT);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void arrangingHomeRecommendationsDisabledDog(long chatId, String name) {
         prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_DOG);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void initialDogHandlerAdvice(long chatId, String name) {
         prepareAndSendMessage(chatId, INITIAL_DOG_HANDLER_ADVICE);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void dogHandlerRecommendation(long chatId, String name) {
         prepareAndSendMessage(chatId, DOG_HANDLER_RECOMMENDATION);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void refusalReasonsList(long chatId, String name) {
         prepareAndSendMessage(chatId, REFUSAL_REASONS_LIST);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void saveContactCatOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД кошек
         prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_CAT, saveContactCatOwnerKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
+
     private void saveContactDogOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД собак
         prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_DOG, saveContactDogOwnerKeyboard());
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
@@ -714,6 +737,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         catOwner.setPhoneNumber(phoneNumber);
         catOwner.setDateTime(currentDateTime);
         catOwner.setStatus(status);
+        catOwner.setProbation(Probation.NOT_ASSIGNED);          // указали поле "не назначен" чтобы там не было null
         catOwnersRepository.save(catOwner);
         log.info("contact saved " + catOwner);
     }
@@ -741,7 +765,82 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         dogOwner.setPhoneNumber(phoneNumber);
         dogOwner.setDateTime(currentDateTime);
         dogOwner.setStatus(status);
+        dogOwner.setProbation(Probation.NOT_ASSIGNED);              // указали поле "не назначен" чтобы там не было null
         dogOwnersRepository.save(dogOwner);
         log.info("contact saved " + dogOwner);
     }
+
+    //cron = ("0 0/1 * * * ?") - каждую минуту (для теста)
+    //cron = "@daily" - в полночь (для работы)
+    //подумать над оптимизацией кода (есть ли смысл и возможность наследования и использования полиморфизма, есть ли смысл сократить количество классов)
+    @Scheduled(cron = "@daily")
+    private void findProbation() {
+        log.info("daily search for probation statuses has begun");
+
+        List<CatOwners> catOwners = catOwnersRepository.findAll(); //собрали всех пользователей по двум БД
+        List<DogOwners> dogOwners = dogOwnersRepository.findAll();
+
+        catOwners.forEach(catOwner -> {                                 //прошлись во всем пользователям CAT
+            Long chatId = catOwner.getChatId();
+            switch (catOwner.getProbation()){                           //проверили на совпадение статуса испытательного срока
+                case FAILED:                                            //не прошел - уведомили, сменили статус на завершенный с провалом
+                    prepareAndSendMessage(chatId,FAILED);
+                    CatOwners owner1 = catOwnersRepository.findById(chatId).get(); //взяли готового клиента, сменили статус испытательного срока и пересохранили
+                    owner1.setProbation(Probation.COMPLETED_FAILED);
+                    catOwnersRepository.save(owner1);
+                    break;
+                case PASSED:                                            //прошел - уведомили, сменили статус на завершенный с успехом
+                    prepareAndSendMessage(chatId,PROBATION_PASSED);
+                    CatOwners owner2 = catOwnersRepository.findById(chatId).get();
+                    owner2.setProbation(Probation.COMPLETED_SUCCESS);
+                    catOwnersRepository.save(owner2);
+                    break;
+                case EXTENDED_14:                                       //уведомили о продлении и сменили статус на "в процессе)
+                    prepareAndSendMessage(chatId,EXTENDED_14);
+                    CatOwners owner3 = catOwnersRepository.findById(chatId).get();
+                    owner3.setProbation(Probation.IN_PROGRESS);
+                    catOwnersRepository.save(owner3);
+                    //тут нужно поставить логику по добавлению +14 дней к полю времени испытательного срока
+                    break;
+                case EXTENDED_30:
+                    prepareAndSendMessage(chatId,EXTENDED_30);
+                    CatOwners owner4 = catOwnersRepository.findById(chatId).get();
+                    owner4.setProbation(Probation.IN_PROGRESS);
+                    catOwnersRepository.save(owner4);
+                    catOwner.setProbation(Probation.IN_PROGRESS);       //тут нужно поставить логику по добавлению +30 дней к полю времени испытательного срока
+                    break;
+            }
+        } );
+
+        dogOwners.forEach(dogOwner -> {
+            Long chatId = dogOwner.getChatId();
+            switch (dogOwner.getProbation()){
+                case FAILED:
+                    prepareAndSendMessage(chatId,FAILED);
+                    DogOwners owner1 = dogOwnersRepository.findById(chatId).get();
+                    owner1.setProbation(Probation.COMPLETED_FAILED);
+                    dogOwnersRepository.save(owner1);
+                    break;
+                case PASSED:
+                    prepareAndSendMessage(chatId,PROBATION_PASSED);
+                    DogOwners owner2 = dogOwnersRepository.findById(chatId).get();
+                    owner2.setProbation(Probation.COMPLETED_SUCCESS);
+                    dogOwnersRepository.save(owner2);
+                    break;
+                case EXTENDED_14:
+                    prepareAndSendMessage(chatId,EXTENDED_14);
+                    DogOwners owner3 = dogOwnersRepository.findById(chatId).get();
+                    owner3.setProbation(Probation.IN_PROGRESS);
+                    dogOwnersRepository.save(owner3);
+                    break;
+                case EXTENDED_30:
+                    prepareAndSendMessage(chatId,EXTENDED_30);
+                    DogOwners owner4 = dogOwnersRepository.findById(chatId).get();
+                    owner4.setProbation(Probation.IN_PROGRESS);
+                    dogOwnersRepository.save(owner4);
+                    break;
+            }
+        } );
+    }
 }
+
