@@ -19,11 +19,9 @@ public class Constants {
     public final static String SAVE_EMOJI = "\uD83D\uDCBE";
     public final static String STOP_EMOJI = "❌";
 
-    public final static String OUTBOX = "\uD83D\uDCE4";
 
     // messages
 
-    public final static String SHARE_PHONE_NUMBER = "Поделиться номером телефона " + OUTBOX;
     public final static String GREETING_PLUS_SELECT_SHELTER_TEXT_START =
             "Привет!" + BLUSH_EMOJI + " \n " + "\n " + "Я бот приюта для домашних животных! \n " + "\n " + "Моя цель - внести в твой мир хаос, " + "суету и бессонные ночи, а точнее - " +
                     "помочь тебе забрать мохнатого из приюта! \n" + "\n " + "Я с радостью предоставлю информацию о приюте, " + "дам советы по уходу за мохнатым, " + "расскажу как забрать ушастого из приюта, " +
