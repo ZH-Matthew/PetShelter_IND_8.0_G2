@@ -4,8 +4,10 @@ import com.example.petshelterg2.config.BotConfig;
 import com.example.petshelterg2.model.CatOwners;
 import com.example.petshelterg2.model.DogOwners;
 import com.example.petshelterg2.model.Probation;
+import com.example.petshelterg2.model.Selection;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
+import com.example.petshelterg2.repository.SelectionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,6 +41,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     @Autowired
     private CatOwnersRepository catOwnersRepository;
 
+    @Autowired
+    private SelectionRepository selectionRepository;
+
     public TelegramBot(BotConfig config) {
         this.config = config;
     }
@@ -65,14 +70,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return config.getOwnerId();
     }
 
-    public boolean choosingAShelter; //переменная выбора приюта кошки - false (0), собаки true (1)
 
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
-        //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
+                                                                //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
         if (update.getMessage().getContact() != null) {         //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
-            if (choosingAShelter) {
+            Boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            if (selection) {
                 saveDogOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам собак
                 prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
             } else {
@@ -182,12 +187,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
                     refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
                     break;
-                case CONTACT_WITH_ME_BUTTON_CAT:
-                    saveContactCatOwner(chatId, update.getMessage().getChat().getFirstName());
-                    break;
-                case CONTACT_WITH_ME_BUTTON_DOG:
-                    saveContactDogOwner(chatId, update.getMessage().getChat().getFirstName());
-                    break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
                     break;
@@ -272,11 +271,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     private void dog(long chatId, String name) {//метод для перехода в собачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
+        saveSelection(chatId,true);                      //сохранили клиента в БД Selection с выбором собак
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private void cat(long chatId, String name) {//метод для перехода в кошачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
+        saveSelection(chatId,false);                      //сохранили клиента в БД Selection с выбором кошек
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -415,16 +416,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
-    private void saveContactCatOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД кошек
-        prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_CAT, saveContactCatOwnerKeyboard());
-        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
-    }
-
-    private void saveContactDogOwner(long chatId, String name) { //переход в подтверждение передачи контакта в БД собак
-        prepareAndSendMessageAndKeyboard(chatId, CONTACT_WITH_ME_BUTTON_DOG, saveContactDogOwnerKeyboard());
-        log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
-    }
-
     /**
      * Метод собирает стартовую клавиатуру <p>
      * Реализуя две кнопки на основе: <p>
@@ -464,7 +455,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(CONTACT_WITH_ME_BUTTON_DOG);
+
+        KeyboardButton keyboardButtonDog = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonDog.setText(CONTACT_WITH_ME_BUTTON_DOG);                   //добавил в кнопку отображаемый текст
+        keyboardButtonDog.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+
+        row.add(keyboardButtonDog);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -493,7 +489,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add(CONTACT_WITH_ME_BUTTON_CAT);
+
+        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
+        keyboardButtonCat.setText(CONTACT_WITH_ME_BUTTON_CAT);                   //добавил в кнопку отображаемый текст
+        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
+
+        row.add(keyboardButtonCat);
         row.add(CALL_VOLUNTEER_BUTTON);
         row.add(MAIN_MAIN);
         keyboardRows.add(row);
@@ -642,41 +643,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return keyboardMarkup;
     }
 
-    private ReplyKeyboardMarkup saveContactCatOwnerKeyboard() {
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-
-        choosingAShelter = false;
-
-        KeyboardRow row = new KeyboardRow();
-        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
-        keyboardButtonCat.setText(SHARE_PHONE_NUMBER);                   //добавил в кнопку отображаемый текст
-        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
-        row.add(keyboardButtonCat);
-        row.add(MAIN_MAIN);
-        keyboardRows.add(row);
-
-        keyboardMarkup.setKeyboard(keyboardRows);
-        return keyboardMarkup;
-    }
-
-    private ReplyKeyboardMarkup saveContactDogOwnerKeyboard() {
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-
-        choosingAShelter = true;
-
-        KeyboardRow row = new KeyboardRow();
-        KeyboardButton keyboardButtonCat = new KeyboardButton();   //создал функциональную кнопку
-        keyboardButtonCat.setText(SHARE_PHONE_NUMBER);                   //добавил в кнопку отображаемый текст
-        keyboardButtonCat.setRequestContact(true);                 //добавил в кнопку запрос контакта у пользователя
-        row.add(keyboardButtonCat);
-        row.add(MAIN_MAIN);
-        keyboardRows.add(row);
-
-        keyboardMarkup.setKeyboard(keyboardRows);
-        return keyboardMarkup;
-    }
 
     /**
      * Метод для вызова волонтера <p>
@@ -768,6 +734,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         dogOwner.setProbation(Probation.NOT_ASSIGNED);              // указали поле "не назначен" чтобы там не было null
         dogOwnersRepository.save(dogOwner);
         log.info("contact saved " + dogOwner);
+    }
+
+    private void saveSelection(long chatId,Boolean selection){
+        Selection newSelection = new Selection();
+        newSelection.setSelection(selection);
+        newSelection.setChatId(chatId);
+        selectionRepository.save(newSelection);
     }
 
     //cron = ("0 0/1 * * * ?") - каждую минуту (для теста)
