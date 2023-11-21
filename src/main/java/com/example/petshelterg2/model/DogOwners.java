@@ -19,6 +19,7 @@ public class DogOwners {
     private String firstName;
     private String userName;
     private String phoneNumber;
+    private Probation probation; //enum-поле испытательного срока
 
     //    Как только период в 30 дней заканчивается, волонтеры принимают решение о том, остается животное у хозяина или нет.
 //    Испытательный срок может быть пройден, может быть продлен на срок еще 14 или 30 дней, а может быть не пройден.
