@@ -19,4 +19,5 @@ public class Selection {
     private Long chatId;            //чат id как primary key
 
     private Boolean selection;      //переменная выбора приюта кошки - false (0), собаки true (1)
+    private Integer counter;        //переменная для этапов отчета
 }
