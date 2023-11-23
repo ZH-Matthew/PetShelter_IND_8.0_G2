@@ -31,29 +31,29 @@ public class Constants {
 
     public static final String PROBATION_PASSED =
             "Привет!" + BLUSH_EMOJI + " \n " +
-            "\n " +
-            "Поздравляю с успешным прохождением испытательного срока! \n "+
-            "\n " +
-            "Я горжусь тобой! Пусть каждый день с твоим питомцем будет наполнен радостью!";
+                    "\n " +
+                    "Поздравляю с успешным прохождением испытательного срока! \n " +
+                    "\n " +
+                    "Я горжусь тобой! Пусть каждый день с твоим питомцем будет наполнен радостью!";
 
     public static final String FAILED =
             "Привет!" + BLUSH_EMOJI + " \n " +
-            "\n " +
-            "С сожалением должен сообщить что испытательный срок не пройден! \n "+
-            "\n " +
-            "Увы, такое случается! С тобой скоро свяжется волонтёр для дальнейшего взаимодействия, либо можно не ждать пока он напишет, а нажать копку <<Позвать волонтёра>> !";
+                    "\n " +
+                    "С сожалением должен сообщить что испытательный срок не пройден! \n " +
+                    "\n " +
+                    "Увы, такое случается! С тобой скоро свяжется волонтёр для дальнейшего взаимодействия, либо можно не ждать пока он напишет, а нажать копку <<Позвать волонтёра>> !";
 
     public static final String EXTENDED_14 =
             "Привет!" + BLUSH_EMOJI + " \n " +
                     "\n " +
-                    "Твой испытательный срок продлен ещё на 14 дней! \n "+
+                    "Твой испытательный срок продлен ещё на 14 дней! \n " +
                     "\n " +
                     "Такое случается! Чтобы узнать подробности можно обратиться к волонтёру нажав кнопку \n <<Позвать волонтёра>> !";
 
     public static final String EXTENDED_30 =
             "Привет!" + BLUSH_EMOJI + " \n " +
                     "\n " +
-                    "Твой испытательный срок продлен ещё на 30 дней! \n "+
+                    "Твой испытательный срок продлен ещё на 30 дней! \n " +
                     "\n " +
                     "Такое случается! Чтобы узнать подробности можно обратиться к волонтёру нажав кнопку \n <<Позвать волонтёра>> !";
 
@@ -480,7 +480,15 @@ public class Constants {
     public final static String SAVE_ADMIN = "Сохранить админа";
     public final static String VOLUNTEER_WILL_WRITE_TO_YOU = "Волонтёр получил уведомление и скоро вам напишет!";
     public final static String DATA_SAVED = "Данные сохранены" + " " + SAVE_EMOJI;
-    public final static String TIPS_DOG_HANDLER = "Выберите \"Советы по общению с пёсиком\" или \"почему вам могут отказать\"" ;
+    public final static String TIPS_DOG_HANDLER = "Выберите \"Советы по общению с пёсиком\" или \"почему вам могут отказать\"";
+    public final static String SHELTER_THIRD_STEP_CAT = "Ждем фото вашего " + CAT_EMOJI;
+    public final static String SHELTER_THIRD_STEP_DOG = "Ждем фото вашей " + DOG_EMOJI;
+    public final static String DIET_CAT = "Сообщите о рационе животного " + CAT_EMOJI;
+    public final static String DIET_DOG = "Сообщите о рационе животного " + DOG_EMOJI;
+    public final static String WELL_BEING_AND_ADAPTATION_CAT = "Сообщите о общем самочувствие и привыкание к новому месту" + CAT_EMOJI;
+    public final static String WELL_BEING_AND_ADAPTATION_DOG = "Сообщите о общем самочувствие и привыкание к новому месту" + DOG_EMOJI;
+    public final static String CHANGES_BEHAVIOR_CAT = "Сообщите о изменение в поведении: отказ от старых привычек, приобретение новых и т.д." + CAT_EMOJI;
+    public final static String CHANGES_BEHAVIOR_DOG = "Сообщите о изменение в поведении: отказ от старых привычек, приобретение новых и т.д." + DOG_EMOJI;
     //buttons
     public final static String MAIN_MAIN = "Вернуться в главное меню" + " " + BACK_EMOJI;
     public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;

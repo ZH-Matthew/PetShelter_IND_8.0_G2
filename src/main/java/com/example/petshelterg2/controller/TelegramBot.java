@@ -16,7 +16,6 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -83,6 +82,56 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             } else {
                 saveCatOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам кошек
                 prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
+            }
+        }
+        if (update.getMessage().getPhoto() != null) {
+            boolean counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 1;
+            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            if (counter && !selection) {
+                photoShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+            }
+        }
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
+            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            if (counter != null && !selection) {
+                switch (counter) {
+                    case 2:
+                        dietShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                    case 3:
+                        changesBehaviorShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                    case 4:
+                        saveSelection(update.getMessage().getChatId(), false, 0);
+                        mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                }
+            }
+        }
+        if (update.getMessage().getPhoto() != null) {
+            boolean counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 1;
+            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            if (counter && selection) {
+                photoShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+            }
+        }
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
+            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            if (counter != null && selection) {
+                switch (counter) {
+                    case 2:
+                        dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                    case 3:
+                        changesBehaviorShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                    case 4:
+                        saveSelection(update.getMessage().getChatId(), true, 0);
+                        mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        break;
+                }
             }
         }
 
@@ -196,6 +245,12 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
                     refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
                     break;
+                case SHELTER_THIRD_STEP_BUTTON_CAT:
+                    shelterThirdCat(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+                case SHELTER_THIRD_STEP_BUTTON_DOG:
+                    shelterThirdDog(chatId, update.getMessage().getChat().getFirstName());
+                    break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
                     break;
@@ -206,6 +261,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
             }
         }
+//        log.info(update.getMessage().getPhoto().toString());
     }
 
     /**
@@ -280,13 +336,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     private void dog(long chatId, String name) {//метод для перехода в собачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
-        saveSelection(chatId, true);                      //сохранили клиента в БД Selection с выбором собак
+        saveSelection(chatId, true, 0);                      //сохранили клиента в БД Selection с выбором собак
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private void cat(long chatId, String name) {//метод для перехода в кошачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
-        saveSelection(chatId, false);                      //сохранили клиента в БД Selection с выбором кошек
+        saveSelection(chatId, false, 0);                      //сохранили клиента в БД Selection с выбором кошек
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -423,6 +479,54 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     private void refusalReasonsList(long chatId, String name) {
         prepareAndSendMessage(chatId, REFUSAL_REASONS_LIST);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
+    }
+
+    private void shelterThirdCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
+        saveSelection(chatId, false, 1);
+        log.info("Replied to user " + name);
+    }
+
+    private void photoShelterThirdCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, DIET_CAT);
+        saveSelection(chatId, false, 2);
+        log.info("Replied to user " + name);
+    }
+
+    private void dietShelterThirdCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, WELL_BEING_AND_ADAPTATION_CAT);
+        saveSelection(chatId, false, 3);
+        log.info("Replied to user " + name);
+    }
+
+    private void changesBehaviorShelterThirdCat(long chatId, String name) {
+        prepareAndSendMessage(chatId, CHANGES_BEHAVIOR_CAT);
+        saveSelection(chatId, false, 4);
+        log.info("Replied to user " + name);
+    }
+
+    private void shelterThirdDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
+        saveSelection(chatId, true, 1);
+        log.info("Replied to user " + name);
+    }
+
+    private void photoShelterThirdDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, DIET_CAT);
+        saveSelection(chatId, true, 2);
+        log.info("Replied to user " + name);
+    }
+
+    private void dietShelterThirdDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, WELL_BEING_AND_ADAPTATION_CAT);
+        saveSelection(chatId, true, 3);
+        log.info("Replied to user " + name);
+    }
+
+    private void changesBehaviorShelterThirdDog(long chatId, String name) {
+        prepareAndSendMessage(chatId, CHANGES_BEHAVIOR_CAT);
+        saveSelection(chatId, true, 4);
+        log.info("Replied to user " + name);
     }
 
     /**
@@ -745,10 +849,11 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         log.info("contact saved " + dogOwner);
     }
 
-    private void saveSelection(long chatId, Boolean selection) {
+    private void saveSelection(long chatId, Boolean selection, Integer counter) {
         Selection newSelection = new Selection();
         newSelection.setSelection(selection);
         newSelection.setChatId(chatId);
+        newSelection.setCounter(counter);
         selectionRepository.save(newSelection);
     }
 
