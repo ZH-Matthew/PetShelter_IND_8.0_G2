@@ -138,6 +138,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+            String name = update.getMessage().getChat().getFirstName();
 
             if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
                 String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам
@@ -150,106 +151,106 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
             switch (messageText) {
                 case "/start":
-                    startCommand(chatId, update.getMessage().getChat().getFirstName());
+                    startCommand(chatId, name);
                     break;
                 case MAIN_MAIN:
-                    mainMenu(chatId, update.getMessage().getChat().getFirstName());
+                    mainMenu(chatId, name);
                     break;
                 case CAT_SHELTER_BUTTON:
-                    cat(chatId, update.getMessage().getChat().getFirstName());
+                    cat(chatId, name);
                     break;
                 case DOG_SHELTER_BUTTON:
-                    dog(chatId, update.getMessage().getChat().getFirstName());
+                    dog(chatId, name);
                     break;
                 case ABOUT_SHELTER_BUTTON_CAT:
-                    informationCatShelter(chatId, update.getMessage().getChat().getFirstName());
+                    informationCatShelter(chatId, name);
                     break;
                 case ABOUT_SHELTER_BUTTON_DOG:
-                    informationDogShelter(chatId, update.getMessage().getChat().getFirstName());
+                    informationDogShelter(chatId, name);
                     break;
                 case SHELTER_SECOND_STEP_BUTTON_CAT:
-                    takeAnCat(chatId, update.getMessage().getChat().getFirstName());
+                    takeAnCat(chatId, name);
                     break;
                 case SHELTER_SECOND_STEP_BUTTON_DOG:
-                    takeAnDog(chatId, update.getMessage().getChat().getFirstName());
+                    takeAnDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON1_CAT:
-                    recommendationsHomeCat(chatId, update.getMessage().getChat().getFirstName());
+                    recommendationsHomeCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON1_DOG:
-                    recommendationsHomeDog(chatId, update.getMessage().getChat().getFirstName());
+                    recommendationsHomeDog(chatId, name);
                     break;
                 case SHELTER_SCHEDULE_BUTTON_CAT:
-                    catShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    catShelterWork(chatId, name);
                     break;
                 case TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL:
-                    tipsFromDog(chatId, update.getMessage().getChat().getFirstName());
+                    tipsFromDog(chatId, name);
                     break;
                 case SHELTER_SCHEDULE_BUTTON_DOG:
-                    dogShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    dogShelterWork(chatId, name);
                     break;
                 case SECURITY_CONTACTS_BUTTON_CAT:
-                    catShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    catShelterSecurityContacts(chatId, name);
                     break;
                 case SECURITY_CONTACTS_BUTTON_DOG:
-                    dogShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    dogShelterSecurityContacts(chatId, name);
                     break;
                 case RULES_FOR_GETTING_KNOW_CAT:
-                    safetyNotesRulesForFirstMetCat(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesRulesForFirstMetCat(chatId, name);
                     break;
                 case RULES_FOR_GETTING_KNOW_DOG:
-                    safetyNotesRulesForFirstMetDog(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesRulesForFirstMetDog(chatId, name);
                     break;
                 case LIST_DOCUMENTS_TAKE_ANIMAL_DOG:
-                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    listOfDocumentsForAdoption(chatId, name);
                     break;
                 case LIST_DOCUMENTS_TAKE_ANIMAL_CAT:
-                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    listOfDocumentsForAdoption(chatId, name);
                     break;
                 case RECOMMENDATIONS_TRANSPORTATION_CAT:
-                    transportingRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    transportingRecommendationsCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_TRANSPORTATION_DOG:
-                    transportingRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    transportingRecommendationsDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_KITTY:
-                    arrangingHomeRecommendationsKitty(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsKitty(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_PUPPY:
-                    arrangingHomeRecommendationsPuppy(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsPuppy(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON2_CAT:
-                    arrangingHomeRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON2_DOG:
-                    arrangingHomeRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES:
-                    arrangingHomeRecommendationsDisabledCat(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDisabledCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES:
-                    arrangingHomeRecommendationsDisabledDog(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDisabledDog(chatId, name);
                     break;
                 case SAFETY_NOTES_BUTTON_CAT:
-                    safetyNotesCat(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesCat(chatId, name);
                     break;
                 case SAFETY_NOTES_BUTTON_DOG:
-                    safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesDog(chatId, name);
                     break;
                 case TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG:
-                    initialDogHandlerAdvice(chatId, update.getMessage().getChat().getFirstName());
+                    initialDogHandlerAdvice(chatId, name);
                     break;
                 case RECOMMENDATIONS_FURTHER_REFERENCE_THEM:
-                    dogHandlerRecommendation(chatId, update.getMessage().getChat().getFirstName());
+                    dogHandlerRecommendation(chatId, name);
                     break;
                 case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
-                    refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
+                    refusalReasonsList(chatId, name);
                     break;
                 case SHELTER_THIRD_STEP_BUTTON_CAT:
-                    shelterThirdCat(chatId, update.getMessage().getChat().getFirstName());
+                    shelterThirdCat(chatId, name);
                     break;
                 case SHELTER_THIRD_STEP_BUTTON_DOG:
-                    shelterThirdDog(chatId, update.getMessage().getChat().getFirstName());
+                    shelterThirdDog(chatId, name);
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
