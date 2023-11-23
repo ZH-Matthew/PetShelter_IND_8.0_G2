@@ -74,7 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
-                                                                //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
+        //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
         if (update.getMessage().getContact() != null) {         //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
             Boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
             if (selection) {
@@ -89,6 +89,15 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+
+            if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
+                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам
+                long userChatId = Long.parseLong(message[1]);                                                 //преобразовали строку с chatId в лонг
+                prepareAndSendMessage(userChatId,MESSAGE_BAD_REPORT);                                       //отправили сообщение пользователю
+                log.info("The admin sent a message about the poor quality of the report. ChatID: " + userChatId);
+                return;
+            }
+
 
             switch (messageText) {
                 case "/start":
@@ -271,13 +280,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     private void dog(long chatId, String name) {//метод для перехода в собачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
-        saveSelection(chatId,true);                      //сохранили клиента в БД Selection с выбором собак
+        saveSelection(chatId, true);                      //сохранили клиента в БД Selection с выбором собак
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
     private void cat(long chatId, String name) {//метод для перехода в кошачий приют, с клавиатурой
         prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
-        saveSelection(chatId,false);                      //сохранили клиента в БД Selection с выбором кошек
+        saveSelection(chatId, false);                      //сохранили клиента в БД Selection с выбором кошек
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -736,7 +745,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         log.info("contact saved " + dogOwner);
     }
 
-    private void saveSelection(long chatId,Boolean selection){
+    private void saveSelection(long chatId, Boolean selection) {
         Selection newSelection = new Selection();
         newSelection.setSelection(selection);
         newSelection.setChatId(chatId);
@@ -755,65 +764,65 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
         catOwners.forEach(catOwner -> {                                 //прошлись во всем пользователям CAT
             Long chatId = catOwner.getChatId();
-            switch (catOwner.getProbation()){                           //проверили на совпадение статуса испытательного срока
+            switch (catOwner.getProbation()) {                           //проверили на совпадение статуса испытательного срока
                 case FAILED:                                            //не прошел - уведомили, сменили статус на завершенный с провалом
-                    prepareAndSendMessage(chatId,FAILED);
+                    prepareAndSendMessage(chatId, FAILED);
                     CatOwners owner1 = catOwnersRepository.findById(chatId).get(); //взяли готового клиента, сменили статус испытательного срока и пересохранили
                     owner1.setProbation(Probation.COMPLETED_FAILED);
                     catOwnersRepository.save(owner1);
                     break;
                 case PASSED:                                            //прошел - уведомили, сменили статус на завершенный с успехом
-                    prepareAndSendMessage(chatId,PROBATION_PASSED);
+                    prepareAndSendMessage(chatId, PROBATION_PASSED);
                     CatOwners owner2 = catOwnersRepository.findById(chatId).get();
                     owner2.setProbation(Probation.COMPLETED_SUCCESS);
                     catOwnersRepository.save(owner2);
                     break;
                 case EXTENDED_14:                                       //уведомили о продлении и сменили статус на "в процессе)
-                    prepareAndSendMessage(chatId,EXTENDED_14);
+                    prepareAndSendMessage(chatId, EXTENDED_14);
                     CatOwners owner3 = catOwnersRepository.findById(chatId).get();
                     owner3.setProbation(Probation.IN_PROGRESS);
                     catOwnersRepository.save(owner3);
                     //тут нужно поставить логику по добавлению +14 дней к полю времени испытательного срока
                     break;
                 case EXTENDED_30:
-                    prepareAndSendMessage(chatId,EXTENDED_30);
+                    prepareAndSendMessage(chatId, EXTENDED_30);
                     CatOwners owner4 = catOwnersRepository.findById(chatId).get();
                     owner4.setProbation(Probation.IN_PROGRESS);
                     catOwnersRepository.save(owner4);
                     catOwner.setProbation(Probation.IN_PROGRESS);       //тут нужно поставить логику по добавлению +30 дней к полю времени испытательного срока
                     break;
             }
-        } );
+        });
 
         dogOwners.forEach(dogOwner -> {
             Long chatId = dogOwner.getChatId();
-            switch (dogOwner.getProbation()){
+            switch (dogOwner.getProbation()) {
                 case FAILED:
-                    prepareAndSendMessage(chatId,FAILED);
+                    prepareAndSendMessage(chatId, FAILED);
                     DogOwners owner1 = dogOwnersRepository.findById(chatId).get();
                     owner1.setProbation(Probation.COMPLETED_FAILED);
                     dogOwnersRepository.save(owner1);
                     break;
                 case PASSED:
-                    prepareAndSendMessage(chatId,PROBATION_PASSED);
+                    prepareAndSendMessage(chatId, PROBATION_PASSED);
                     DogOwners owner2 = dogOwnersRepository.findById(chatId).get();
                     owner2.setProbation(Probation.COMPLETED_SUCCESS);
                     dogOwnersRepository.save(owner2);
                     break;
                 case EXTENDED_14:
-                    prepareAndSendMessage(chatId,EXTENDED_14);
+                    prepareAndSendMessage(chatId, EXTENDED_14);
                     DogOwners owner3 = dogOwnersRepository.findById(chatId).get();
                     owner3.setProbation(Probation.IN_PROGRESS);
                     dogOwnersRepository.save(owner3);
                     break;
                 case EXTENDED_30:
-                    prepareAndSendMessage(chatId,EXTENDED_30);
+                    prepareAndSendMessage(chatId, EXTENDED_30);
                     DogOwners owner4 = dogOwnersRepository.findById(chatId).get();
                     owner4.setProbation(Probation.IN_PROGRESS);
                     dogOwnersRepository.save(owner4);
                     break;
             }
-        } );
+        });
     }
 }
 
