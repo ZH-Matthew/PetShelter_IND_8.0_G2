@@ -1,10 +1,7 @@
 package com.example.petshelterg2.controller;
 
 import com.example.petshelterg2.config.BotConfig;
-import com.example.petshelterg2.model.CatOwners;
-import com.example.petshelterg2.model.DogOwners;
-import com.example.petshelterg2.model.Probation;
-import com.example.petshelterg2.model.Selection;
+import com.example.petshelterg2.model.*;
 import com.example.petshelterg2.repository.CatOwnersRepository;
 import com.example.petshelterg2.repository.DogOwnersRepository;
 import com.example.petshelterg2.repository.SelectionRepository;
@@ -20,8 +17,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.petshelterg2.constants.Constants.*;
 
@@ -92,7 +93,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) {
             Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
             boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            if (counter != null && !selection) {
+            if (counter != null && !selection) { //кошки
                 switch (counter) {
                     case 2:
                         dietShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
@@ -117,7 +118,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) {
             Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
             boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            if (counter != null && selection) {
+            if (counter != null && selection) { //собаки
                 switch (counter) {
                     case 2:
                         dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
@@ -136,109 +137,119 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+            String name = update.getMessage().getChat().getFirstName();
+
+            if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
+                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам
+                long userChatId = Long.parseLong(message[1]);                                                 //преобразовали строку с chatId в лонг
+                prepareAndSendMessage(userChatId, MESSAGE_BAD_REPORT);                                       //отправили сообщение пользователю
+                log.info("The admin sent a message about the poor quality of the report. ChatID: " + userChatId);
+                return;
+            }
+
 
             switch (messageText) {
                 case "/start":
-                    startCommand(chatId, update.getMessage().getChat().getFirstName());
+                    startCommand(chatId, name);
                     break;
                 case MAIN_MAIN:
-                    mainMenu(chatId, update.getMessage().getChat().getFirstName());
+                    mainMenu(chatId, name);
                     break;
                 case CAT_SHELTER_BUTTON:
-                    cat(chatId, update.getMessage().getChat().getFirstName());
+                    cat(chatId, name);
                     break;
                 case DOG_SHELTER_BUTTON:
-                    dog(chatId, update.getMessage().getChat().getFirstName());
+                    dog(chatId, name);
                     break;
                 case ABOUT_SHELTER_BUTTON_CAT:
-                    informationCatShelter(chatId, update.getMessage().getChat().getFirstName());
+                    informationCatShelter(chatId, name);
                     break;
                 case ABOUT_SHELTER_BUTTON_DOG:
-                    informationDogShelter(chatId, update.getMessage().getChat().getFirstName());
+                    informationDogShelter(chatId, name);
                     break;
                 case SHELTER_SECOND_STEP_BUTTON_CAT:
-                    takeAnCat(chatId, update.getMessage().getChat().getFirstName());
+                    takeAnCat(chatId, name);
                     break;
                 case SHELTER_SECOND_STEP_BUTTON_DOG:
-                    takeAnDog(chatId, update.getMessage().getChat().getFirstName());
+                    takeAnDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON1_CAT:
-                    recommendationsHomeCat(chatId, update.getMessage().getChat().getFirstName());
+                    recommendationsHomeCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON1_DOG:
-                    recommendationsHomeDog(chatId, update.getMessage().getChat().getFirstName());
+                    recommendationsHomeDog(chatId, name);
                     break;
                 case SHELTER_SCHEDULE_BUTTON_CAT:
-                    catShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    catShelterWork(chatId, name);
                     break;
                 case TIPS_DOG_HANDLER_AND_WHY_THEY_MAY_REFUSE_TAKE_ANIMAL:
-                    tipsFromDog(chatId, update.getMessage().getChat().getFirstName());
+                    tipsFromDog(chatId, name);
                     break;
                 case SHELTER_SCHEDULE_BUTTON_DOG:
-                    dogShelterWork(chatId, update.getMessage().getChat().getFirstName());
+                    dogShelterWork(chatId, name);
                     break;
                 case SECURITY_CONTACTS_BUTTON_CAT:
-                    catShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    catShelterSecurityContacts(chatId, name);
                     break;
                 case SECURITY_CONTACTS_BUTTON_DOG:
-                    dogShelterSecurityContacts(chatId, update.getMessage().getChat().getFirstName());
+                    dogShelterSecurityContacts(chatId, name);
                     break;
                 case RULES_FOR_GETTING_KNOW_CAT:
-                    safetyNotesRulesForFirstMetCat(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesRulesForFirstMetCat(chatId, name);
                     break;
                 case RULES_FOR_GETTING_KNOW_DOG:
-                    safetyNotesRulesForFirstMetDog(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesRulesForFirstMetDog(chatId, name);
                     break;
                 case LIST_DOCUMENTS_TAKE_ANIMAL_DOG:
-                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    listOfDocumentsForAdoption(chatId, name);
                     break;
                 case LIST_DOCUMENTS_TAKE_ANIMAL_CAT:
-                    listOfDocumentsForAdoption(chatId, update.getMessage().getChat().getFirstName());
+                    listOfDocumentsForAdoption(chatId, name);
                     break;
                 case RECOMMENDATIONS_TRANSPORTATION_CAT:
-                    transportingRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    transportingRecommendationsCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_TRANSPORTATION_DOG:
-                    transportingRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    transportingRecommendationsDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_KITTY:
-                    arrangingHomeRecommendationsKitty(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsKitty(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_PUPPY:
-                    arrangingHomeRecommendationsPuppy(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsPuppy(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON2_CAT:
-                    arrangingHomeRecommendationsCat(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_BUTTON2_DOG:
-                    arrangingHomeRecommendationsDog(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDog(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_CAT_WITH_DISABILITIES:
-                    arrangingHomeRecommendationsDisabledCat(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDisabledCat(chatId, name);
                     break;
                 case RECOMMENDATIONS_HOME_DOG_WITH_DISABILITIES:
-                    arrangingHomeRecommendationsDisabledDog(chatId, update.getMessage().getChat().getFirstName());
+                    arrangingHomeRecommendationsDisabledDog(chatId, name);
                     break;
                 case SAFETY_NOTES_BUTTON_CAT:
-                    safetyNotesCat(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesCat(chatId, name);
                     break;
                 case SAFETY_NOTES_BUTTON_DOG:
-                    safetyNotesDog(chatId, update.getMessage().getChat().getFirstName());
+                    safetyNotesDog(chatId, name);
                     break;
                 case TIPS_DOG_HANDLER_COMMUNICATE_WITH_DOG:
-                    initialDogHandlerAdvice(chatId, update.getMessage().getChat().getFirstName());
+                    initialDogHandlerAdvice(chatId, name);
                     break;
                 case RECOMMENDATIONS_FURTHER_REFERENCE_THEM:
-                    dogHandlerRecommendation(chatId, update.getMessage().getChat().getFirstName());
+                    dogHandlerRecommendation(chatId, name);
                     break;
                 case LIST_OF_REASONS_WHY_THEY_MAY_REFUSE_DOG:
-                    refusalReasonsList(chatId, update.getMessage().getChat().getFirstName());
+                    refusalReasonsList(chatId, name);
                     break;
                 case SHELTER_THIRD_STEP_BUTTON_CAT:
-                    shelterThirdCat(chatId, update.getMessage().getChat().getFirstName());
+                    shelterThirdCat(chatId, name);
                     break;
                 case SHELTER_THIRD_STEP_BUTTON_DOG:
-                    shelterThirdDog(chatId, update.getMessage().getChat().getFirstName());
+                    shelterThirdDog(chatId, name);
                     break;
                 case CALL_VOLUNTEER_BUTTON:
                     callAVolunteer(chatId, update.getMessage().getChat().getUserName());
@@ -849,6 +860,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //cron = ("0 0/1 * * * ?") - каждую минуту (для теста)
     //cron = "@daily" - в полночь (для работы)
     //подумать над оптимизацией кода (есть ли смысл и возможность наследования и использования полиморфизма, есть ли смысл сократить количество классов)
+    //метод проверки испытательного срока
     @Scheduled(cron = "@daily")
     private void findProbation() {
         log.info("daily search for probation statuses has begun");
@@ -917,6 +929,65 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     break;
             }
         });
+    }
+
+    //cron = ("0 0/1 * * * ?") - каждую минуту (для теста)
+    //cron = ("0 55 23 * * ?") - за 5 минут до полуночи (для работы)
+    //метод проверки отчёта на просрочку (1 день /2 дня)
+    @Scheduled(cron = "0 55 23 * * ?")
+    private void checkReport() {
+        log.info("the report has been checked for any delays");
+
+        List<CatOwners> catOwners = catOwnersRepository.findByProbation(Probation.IN_PROGRESS); //взяли всех пользователей у которых статус испытательного срока активный (это значит что они должны присылать отчет)
+        List<DogOwners> dogOwners = dogOwnersRepository.findByProbation(Probation.IN_PROGRESS);
+        LocalDate dateNow = LocalDate.now();                //сегодняшняя дата
+
+        catOwners.forEach(catOwner -> {                      //взял всех пользователей кошек и пробежался по каждому
+            List<LocalDate> dates = new ArrayList<>();      //создал для каждого массив для хранения дат репортов
+            catOwner.getCatReports().forEach(catReport -> {  //пробежался по каждому значению сета репортов одного пользователя
+                dates.add(catReport.getDate());             //сохранил все даты репортов в отдельный массив (созданный выше)
+            });
+
+            if (dates.contains(dateNow)) {                    //проверяю, есть ли в этих датах сегодняшняя дата (есть)
+                CatOwners newCatOwner = catOwnersRepository.findById(catOwner.getChatId()).get(); //взяли нашего пользователя
+                newCatOwner.setDaysOverdueReport(0);                                             //установили дни просрочки на ноль
+                catOwnersRepository.save(newCatOwner);                                          //перезаписали пользователя с новым количеством дней просрочки (это нужно для того чтобы у пользователя было именно 2 дня просрочки ПОДРЯД, а не 2 за месяц например, ведь он же может реабилитироваться)
+            } else if (!(dates.contains(dateNow)) && catOwner.getDaysOverdueReport() < 1) {   //если нет, и просрочки 0 дней то
+                prepareAndSendMessage(catOwner.getChatId(), NOTICE_OF_LATE_REPORT);      //отправляем пользователю предупреждение
+                CatOwners newCatOwner = catOwnersRepository.findById(catOwner.getChatId()).get();
+                newCatOwner.setDaysOverdueReport(1);                                             //добавили 1 день просрочки
+                catOwnersRepository.save(newCatOwner);
+            } else if (!(dates.contains(dateNow)) && catOwner.getDaysOverdueReport() == 1) {  //если нет и просрочки уже есть 1 день то
+                prepareAndSendMessage(Long.parseLong(config.getOwnerId()), NOTICE_OF_LATE_REPORT_FOR_ADMIN + "Чат ID: " + catOwner.getChatId() + " , Номер телефона : " + catOwner.getPhoneNumber()); //сообщение админу
+                CatOwners newCatOwner = catOwnersRepository.findById(catOwner.getChatId()).get();
+                newCatOwner.setDaysOverdueReport(2);                                             //добавили 1 день просрочки
+                catOwnersRepository.save(newCatOwner);
+            }
+        });
+
+        dogOwners.forEach(dogOwner -> {
+            List<LocalDate> dates = new ArrayList<>();
+            dogOwner.getDogReports().forEach(dogReport -> {
+                dates.add(dogReport.getDate());
+            });
+
+            if (dates.contains(dateNow)) {
+                DogOwners newDogOwner = dogOwnersRepository.findById(dogOwner.getChatId()).get();
+                newDogOwner.setDaysOverdueReport(0);
+                dogOwnersRepository.save(newDogOwner);
+            } else if (!(dates.contains(dateNow)) && dogOwner.getDaysOverdueReport() < 1) {
+                prepareAndSendMessage(dogOwner.getChatId(), NOTICE_OF_LATE_REPORT);
+                DogOwners newDogOwner = dogOwnersRepository.findById(dogOwner.getChatId()).get();
+                newDogOwner.setDaysOverdueReport(1);
+                dogOwnersRepository.save(newDogOwner);
+            } else if (!(dates.contains(dateNow)) && dogOwner.getDaysOverdueReport() == 1) {
+                prepareAndSendMessage(Long.parseLong(config.getOwnerId()), NOTICE_OF_LATE_REPORT_FOR_ADMIN + "Чат ID: " + dogOwner.getChatId() + " , Номер телефона : " + dogOwner.getPhoneNumber());
+                DogOwners newDogOwner = dogOwnersRepository.findById(dogOwner.getChatId()).get();
+                newDogOwner.setDaysOverdueReport(2);
+                dogOwnersRepository.save(newDogOwner);
+            }
+        });
+
     }
 }
 
