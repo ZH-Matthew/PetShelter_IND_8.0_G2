@@ -47,6 +47,8 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     @Autowired
     private DogReportPhotoRepository dogReportPhotoRepository;
     @Autowired
+    private CatReportRepository сatReportRepository;
+    @Autowired
     private SelectionRepository selectionRepository;
 
     public TelegramBot(BotConfig config) {
@@ -108,6 +110,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 photoShelterThirdCat(chatId, name);
             }
             if (counter && selection) {//собаки
+                processPhotoDog(update.getMessage());
                 photoShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
             }
 
@@ -1007,13 +1010,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         var photoSizeCount = telegramMessage.getPhoto().size();
         var photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() - 1 : 0;
         var telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
-        var fileId = telegramPhoto.getFileId();
-        var response = getFilePath(fileId);
+        var fileId = telegramPhoto.getFileId();//
+        var response = getFilePath(fileId);//Запрос HTTP
         if (response.getStatusCode() == HttpStatus.OK) {
-            var filePath = getFilePath(response);
-            var fileInByte = downloadFiles(filePath);
-            var transientAppPhoto = buildTransientAppPhoto(telegramPhoto, fileInByte);
-            catReportPhotoRepository.save(transientAppPhoto);
+            var filePath = getFilePath(response);//Достаем данные из JSON, а именно массив байт
+            var fileInByte = downloadFiles(filePath);//Сохраняем фото на оперативную память
+            var transientAppPhoto = buildTransientAppPhotoCat(telegramPhoto, fileInByte);//создаем объект
+            catReportPhotoRepository.save(transientAppPhoto);//сохраняем его
         } else {
             throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
         }
@@ -1028,7 +1031,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (response.getStatusCode() == HttpStatus.OK) {
             var filePath = getFilePath(response);
             var fileInByte = downloadFiles(filePath);
-            var transientAppPhoto = buildTransientAppPhoto(telegramPhoto, fileInByte);
+            var transientAppPhoto = buildTransientAppPhotoDog(telegramPhoto, fileInByte);
             dogReportPhotoRepository.save(transientAppPhoto);
         } else {
             throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
@@ -1036,15 +1039,22 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     }
 
-    private String getFilePath(ResponseEntity<String> response) {
+    private String getFilePath(ResponseEntity<String> response) {//достаем file_path
         var jsonObject = new JSONObject(response.getBody());
         return String.valueOf(jsonObject
                 .getJSONObject("result")
                 .getString("file_path"));
     }
 
-    private CatReportPhoto buildTransientAppPhoto(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {
+    private CatReportPhoto buildTransientAppPhotoCat(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {//Создаем объект
         return CatReportPhoto.builder()
+                .telegramFileId(telegramPhoto.getFileId())
+                .fileAsArrayOfBytes(persistentBinaryContent)
+                .fileSize(telegramPhoto.getFileSize())
+                .build();
+    }
+    private DogReportPhoto buildTransientAppPhotoDog(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {
+        return DogReportPhoto.builder()
                 .telegramFileId(telegramPhoto.getFileId())
                 .fileAsArrayOfBytes(persistentBinaryContent)
                 .fileSize(telegramPhoto.getFileSize())
@@ -1073,7 +1083,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         var headers = new HttpHeaders();
         var request = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(
+        return restTemplate.exchange(//Передаются данные для запроса
                 getFileInfoUri(),
                 HttpMethod.GET,
                 request,
