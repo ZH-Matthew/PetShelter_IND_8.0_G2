@@ -25,4 +25,10 @@ public class BotConfig {
     @Value("${bot.owner}")
     String ownerId;
 
+    @Value("${service.file_storage.uri}")
+    String fileStorageUri;
+    @Value("${service.file_info.uri}")
+    String fileInfoUri;
+
+
 }

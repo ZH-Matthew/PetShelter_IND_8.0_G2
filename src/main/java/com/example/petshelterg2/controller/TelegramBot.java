@@ -2,27 +2,31 @@ package com.example.petshelterg2.controller;
 
 import com.example.petshelterg2.config.BotConfig;
 import com.example.petshelterg2.model.*;
-import com.example.petshelterg2.repository.CatOwnersRepository;
-import com.example.petshelterg2.repository.DogOwnersRepository;
-import com.example.petshelterg2.repository.SelectionRepository;
+import com.example.petshelterg2.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.petshelterg2.constants.Constants.*;
 
@@ -38,7 +42,10 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
     @Autowired
     private CatOwnersRepository catOwnersRepository;
-
+    @Autowired
+    private CatReportPhotoRepository catReportPhotoRepository;
+    @Autowired
+    private DogReportPhotoRepository dogReportPhotoRepository;
     @Autowired
     private SelectionRepository selectionRepository;
 
@@ -56,6 +63,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     @Override
     public String getBotToken() {
         return config.getToken();
+    }
+
+    public String getFileStorageUri() {
+        return config.getFileStorageUri();
+    }
+
+    public String getFileInfoUri() {
+        return config.getFileInfoUri();
     }
 
     /**
@@ -86,38 +101,36 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (update.getMessage().getPhoto() != null) {
             boolean counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 1;
             boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            if (counter && !selection) {
-                photoShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+            long chatId = update.getMessage().getChatId();
+            String name = update.getMessage().getChat().getFirstName();
+            if (counter && !selection) {//кошки
+                processPhotoCat(update.getMessage());
+                photoShelterThirdCat(chatId, name);
             }
+            if (counter && selection) {//собаки
+                photoShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+            }
+
         }
         if (update.hasMessage() && update.getMessage().hasText()) {
+            long chatId = update.getMessage().getChatId();
+            String name = update.getMessage().getChat().getFirstName();
             Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
             boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
             if (counter != null && !selection) { //кошки
                 switch (counter) {
                     case 2:
-                        dietShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        dietShelterThirdCat(chatId, name);
                         break;
                     case 3:
-                        changesBehaviorShelterThirdCat(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        changesBehaviorShelterThirdCat(chatId, name);
                         break;
                     case 4:
-                        saveSelection(update.getMessage().getChatId(), false, 0);
-                        mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                        saveSelection(chatId, false, 0);
+                        mainMenu(chatId, name);
                         break;
                 }
             }
-        }
-        if (update.getMessage().getPhoto() != null) {
-            boolean counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 1;
-            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            if (counter && selection) {
-                photoShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
-            }
-        }
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
-            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
             if (counter != null && selection) { //собаки
                 switch (counter) {
                     case 2:
@@ -134,7 +147,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             }
         }
 
-        if (update.hasMessage() && update.getMessage().hasText()) { //проверяем что сообщение пришло и там есть текст
+        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
@@ -989,5 +1002,85 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         });
 
     }
+
+    public void processPhotoCat(Message telegramMessage) {
+        var photoSizeCount = telegramMessage.getPhoto().size();
+        var photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() - 1 : 0;
+        var telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
+        var fileId = telegramPhoto.getFileId();
+        var response = getFilePath(fileId);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            var filePath = getFilePath(response);
+            var fileInByte = downloadFiles(filePath);
+            var transientAppPhoto = buildTransientAppPhoto(telegramPhoto, fileInByte);
+            catReportPhotoRepository.save(transientAppPhoto);
+        } else {
+            throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
+        }
+    }
+
+    public void processPhotoDog(Message telegramMessage) {
+        var photoSizeCount = telegramMessage.getPhoto().size();
+        var photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() - 1 : 0;
+        var telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
+        var fileId = telegramPhoto.getFileId();
+        var response = getFilePath(fileId);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            var filePath = getFilePath(response);
+            var fileInByte = downloadFiles(filePath);
+            var transientAppPhoto = buildTransientAppPhoto(telegramPhoto, fileInByte);
+            dogReportPhotoRepository.save(transientAppPhoto);
+        } else {
+            throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
+        }
+
+    }
+
+    private String getFilePath(ResponseEntity<String> response) {
+        var jsonObject = new JSONObject(response.getBody());
+        return String.valueOf(jsonObject
+                .getJSONObject("result")
+                .getString("file_path"));
+    }
+
+    private CatReportPhoto buildTransientAppPhoto(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {
+        return CatReportPhoto.builder()
+                .telegramFileId(telegramPhoto.getFileId())
+                .fileAsArrayOfBytes(persistentBinaryContent)
+                .fileSize(telegramPhoto.getFileSize())
+                .build();
+    }
+
+    public byte[] downloadFiles(String filePath) {
+        var fullUri = getFileStorageUri().replace("{bot.token}", getBotToken())
+                .replace("{filePath}", filePath);
+        URL urlObj = null;
+        try {
+            urlObj = new URL(fullUri);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (InputStream is = urlObj.openStream()) {
+            return is.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(urlObj.toExternalForm(), e);
+        }
+    }
+
+    private ResponseEntity<String> getFilePath(String fileId) {
+        var restTemplate = new RestTemplate();
+        var headers = new HttpHeaders();
+        var request = new HttpEntity<>(headers);
+
+        return restTemplate.exchange(
+                getFileInfoUri(),
+                HttpMethod.GET,
+                request,
+                String.class,
+                getBotToken(), fileId
+        );
+    }
+
 }
 

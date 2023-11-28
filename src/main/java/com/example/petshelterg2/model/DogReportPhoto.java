@@ -1,8 +1,14 @@
 package com.example.petshelterg2.model;
 
+import lombok.Builder;
+import lombok.Data;
+
 import javax.persistence.*;
 
+
 @Entity
+@Data
+@Builder
 public class DogReportPhoto {
     @Id
     @GeneratedValue
@@ -15,4 +21,6 @@ public class DogReportPhoto {
     private DogReport dogReport;
 
     private Integer fileSize;
+
+    private byte[] fileAsArrayOfBytes;
 }
