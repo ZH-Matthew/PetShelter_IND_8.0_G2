@@ -47,7 +47,9 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     @Autowired
     private DogReportPhotoRepository dogReportPhotoRepository;
     @Autowired
-    private CatReportRepository сatReportRepository;
+    private CatReportRepository catReportRepository;
+    @Autowired
+    private DogReportRepository dogReportRepository;
     @Autowired
     private SelectionRepository selectionRepository;
 
@@ -120,15 +122,19 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             String name = update.getMessage().getChat().getFirstName();
             Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
             boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            String messageText = update.getMessage().getText();
             if (counter != null && !selection) { //кошки
                 switch (counter) {
                     case 2:
+                        catReportDiet(messageText,chatId);
                         dietShelterThirdCat(chatId, name);
                         break;
                     case 3:
+                        catReportWellBeingAndAdaptation(messageText,chatId);
                         changesBehaviorShelterThirdCat(chatId, name);
                         break;
                     case 4:
+                        catReportChangesBehavior(messageText,chatId);
                         saveSelection(chatId, false, 0);
                         mainMenu(chatId, name);
                         break;
@@ -137,12 +143,15 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             if (counter != null && selection) { //собаки
                 switch (counter) {
                     case 2:
+                        dogReportDiet(messageText,chatId);
                         dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
                         break;
                     case 3:
+                        dogReportWellBeingAndAdaptation(messageText,chatId);
                         changesBehaviorShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
                         break;
                     case 4:
+                        dogReportChangesBehavior(messageText,chatId);
                         saveSelection(update.getMessage().getChatId(), true, 0);
                         mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
                         break;
@@ -1053,6 +1062,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                 .fileSize(telegramPhoto.getFileSize())
                 .build();
     }
+
     private DogReportPhoto buildTransientAppPhotoDog(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {
         return DogReportPhoto.builder()
                 .telegramFileId(telegramPhoto.getFileId())
@@ -1092,5 +1102,41 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         );
     }
 
+    private void catReportDiet(String diet,Long chatId) {
+        CatReport catReport = new CatReport();
+        catReport.setCatOwners(catOwnersRepository.findById(chatId).get());
+        catReport.setDiet(diet);
+        catReport.setDate(LocalDate.now());
+        catReportRepository.save(catReport);
+    }
+    private void catReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
+        catReport.setWellBeingAndAdaptation(wellBeingAndAdaptation);
+        catReportRepository.save(catReport);
+    }
+    private void catReportChangesBehavior(String wellBeingAndAdaptation,Long chatId) {
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
+        catReport.setChangesBehavior(wellBeingAndAdaptation);
+        catReportRepository.save(catReport);
+    }
+    private void dogReportDiet(String diet,Long chatId) {
+        DogReport dogReport = new DogReport();
+        dogReport.setDogOwners(dogOwnersRepository.findById(chatId).get());
+        dogReport.setDiet(diet);
+        dogReport.setDate(LocalDate.now());
+        dogReportRepository.save(dogReport);
+    }
+    private void dogReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
+        dogReport.setWellBeingAndAdaptation(wellBeingAndAdaptation);
+        dogReportRepository.save(dogReport);
+    }
+    private void dogReportChangesBehavior(String wellBeingAndAdaptation,Long chatId) {
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
+        dogReport.setChangesBehavior(wellBeingAndAdaptation);
+        dogReportRepository.save(dogReport);
+    }
+
 }
+
 
