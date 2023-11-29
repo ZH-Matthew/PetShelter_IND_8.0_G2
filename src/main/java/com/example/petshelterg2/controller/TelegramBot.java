@@ -43,10 +43,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     @Autowired
     private CatOwnersRepository catOwnersRepository;
     @Autowired
-    private CatReportPhotoRepository catReportPhotoRepository;
-    @Autowired
-    private DogReportPhotoRepository dogReportPhotoRepository;
-    @Autowired
     private CatReportRepository catReportRepository;
     @Autowired
     private DogReportRepository dogReportRepository;
@@ -1022,10 +1018,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         var fileId = telegramPhoto.getFileId();//
         var response = getFilePath(fileId);//Запрос HTTP
         if (response.getStatusCode() == HttpStatus.OK) {
-            var filePath = getFilePath(response);//Достаем данные из JSON, а именно массив байт
-            var fileInByte = downloadFiles(filePath);//Сохраняем фото на оперативную память
-            var transientAppPhoto = buildTransientAppPhotoCat(telegramPhoto, fileInByte);//создаем объект
-            catReportPhotoRepository.save(transientAppPhoto);//сохраняем его
+            var filePath = getFilePath(response);//Преобразуем файл в JSON
+            var fileInByte = downloadFiles(filePath);//Достаем данные из JSON, а именно массив байт
+            CatReport catReport = new CatReport();
+            catReport.setCatOwners(catOwnersRepository.findById(telegramMessage.getChatId()).get());
+            catReport.setFileAsArrayOfBytes(fileInByte);
+            catReport.setDate(LocalDate.now());
+            catReportRepository.save(catReport);
         } else {
             throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
         }
@@ -1040,8 +1039,11 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         if (response.getStatusCode() == HttpStatus.OK) {
             var filePath = getFilePath(response);
             var fileInByte = downloadFiles(filePath);
-            var transientAppPhoto = buildTransientAppPhotoDog(telegramPhoto, fileInByte);
-            dogReportPhotoRepository.save(transientAppPhoto);
+            DogReport dogReport = new DogReport();
+            dogReport.setDogOwners(dogOwnersRepository.findById(telegramMessage.getChatId()).get());
+            dogReport.setFileAsArrayOfBytes(fileInByte);
+            dogReport.setDate(LocalDate.now());
+            dogReportRepository.save(dogReport);
         } else {
             throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
         }
@@ -1053,22 +1055,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         return String.valueOf(jsonObject
                 .getJSONObject("result")
                 .getString("file_path"));
-    }
-
-    private CatReportPhoto buildTransientAppPhotoCat(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {//Создаем объект
-        return CatReportPhoto.builder()
-                .telegramFileId(telegramPhoto.getFileId())
-                .fileAsArrayOfBytes(persistentBinaryContent)
-                .fileSize(telegramPhoto.getFileSize())
-                .build();
-    }
-
-    private DogReportPhoto buildTransientAppPhotoDog(PhotoSize telegramPhoto, byte[] persistentBinaryContent) {
-        return DogReportPhoto.builder()
-                .telegramFileId(telegramPhoto.getFileId())
-                .fileAsArrayOfBytes(persistentBinaryContent)
-                .fileSize(telegramPhoto.getFileSize())
-                .build();
     }
 
     public byte[] downloadFiles(String filePath) {
@@ -1103,10 +1089,8 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void catReportDiet(String diet,Long chatId) {
-        CatReport catReport = new CatReport();
-        catReport.setCatOwners(catOwnersRepository.findById(chatId).get());
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
         catReport.setDiet(diet);
-        catReport.setDate(LocalDate.now());
         catReportRepository.save(catReport);
     }
     private void catReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
