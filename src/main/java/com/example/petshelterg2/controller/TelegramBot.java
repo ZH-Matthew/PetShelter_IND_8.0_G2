@@ -140,7 +140,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             String name = update.getMessage().getChat().getFirstName();
 
             if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
-                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам
+                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам !!!добавить в сплит параметр split(" ", 2), так строк будет только 2 , первая до пробела и вторая после.
                 long userChatId = Long.parseLong(message[1]);                                                 //преобразовали строку с chatId в лонг
                 prepareAndSendMessage(userChatId, MESSAGE_BAD_REPORT);                                       //отправили сообщение пользователю
                 log.info("The admin sent a message about the poor quality of the report. ChatID: " + userChatId);
