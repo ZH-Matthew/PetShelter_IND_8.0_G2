@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -87,43 +86,41 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
+        long chatId = update.getMessage().getChatId();
+        String name = update.getMessage().getChat().getFirstName();
+
         if (update.getMessage().hasText() && update.getMessage().getText().equals("/start")) {
-            long chatId = update.getMessage().getChatId();
-            String name = update.getMessage().getChat().getFirstName();
             startCommand(chatId, name);
         }
         //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
         if (update.getMessage().getContact() != null) {         //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
-            Boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+            Boolean selection = selectionRepository.findById(chatId).get().getSelection();
             if (selection) {
                 saveDogOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам собак
-                prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
+                prepareAndSendMessage(chatId, DATA_SAVED);
             } else {
                 saveCatOwner(update);                           //вызывает метод сохранения пользователя в БД к владельцам кошек
-                prepareAndSendMessage(update.getMessage().getChatId(), DATA_SAVED);
+                prepareAndSendMessage(chatId, DATA_SAVED);
             }
         }
         if (update.getMessage().getPhoto() != null) {
-            boolean counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 1;
-            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            long chatId = update.getMessage().getChatId();
-            String name = update.getMessage().getChat().getFirstName();
+            boolean counter = selectionRepository.findById(chatId).get().getCounter() == 1;
+            boolean selection = selectionRepository.findById(chatId).get().getSelection();
+
             if (counter && !selection) {//кошки
                 processPhotoCat(update.getMessage());
                 photoShelterThirdCat(chatId, name);
             }
             if (counter && selection) {//собаки
                 processPhotoDog(update.getMessage());
-                photoShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                photoShelterThirdDog(chatId, name);
             }
 
         }
-        if (selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() != 0) {
+        if (selectionRepository.findById(chatId).get().getCounter() != 0) {
             if (update.hasMessage() && update.getMessage().hasText()) {
-                long chatId = update.getMessage().getChatId();
-                String name = update.getMessage().getChat().getFirstName();
-                Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
-                boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+                Integer counter = selectionRepository.findById(chatId).get().getCounter();
+                boolean selection = selectionRepository.findById(chatId).get().getSelection();
                 String messageText = update.getMessage().getText();
                 if (counter != null && !selection) { //кошки
                     switch (counter) {
@@ -146,26 +143,24 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     switch (counter) {
                         case 2:
                             dogReportDiet(messageText, chatId);
-                            dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            dietShelterThirdDog(chatId, name);
                             break;
                         case 3:
                             dogReportWellBeingAndAdaptation(messageText, chatId);
-                            changesBehaviorShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            changesBehaviorShelterThirdDog(chatId, name);
                             break;
                         case 4:
                             dogReportChangesBehavior(messageText, chatId);
-                            saveSelection(update.getMessage().getChatId(), true, 0);
-                            mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            saveSelection(chatId, true, 0);
+                            mainMenu(chatId, name);
                             break;
                     }
                 }
             }
         }
 
-        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0) { //проверяем что сообщение пришло и там есть текст
+        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(chatId).get().getCounter() == 0) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
-            String name = update.getMessage().getChat().getFirstName();
 
             if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
                 String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам !!!добавить в сплит параметр split(" ", 2), так строк будет только 2 , первая до пробела и вторая после.
