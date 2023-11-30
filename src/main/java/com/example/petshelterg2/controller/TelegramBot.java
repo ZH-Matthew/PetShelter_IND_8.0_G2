@@ -87,6 +87,11 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
+        if (update.getMessage().getText().equals("/start")) {
+            long chatId = update.getMessage().getChatId();
+            String name = update.getMessage().getChat().getFirstName();
+            startCommand(chatId, name);
+        }
         //проверка наличия телефона (если он есть проверка на то какую сторону выбрал пользователь, и далее сохранение в БД
         if (update.getMessage().getContact() != null) {         //проверяет есть ли у пользователя контакт, если есть, сохраняет его.
             Boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
@@ -113,49 +118,51 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             }
 
         }
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            long chatId = update.getMessage().getChatId();
-            String name = update.getMessage().getChat().getFirstName();
-            Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
-            boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
-            String messageText = update.getMessage().getText();
-            if (counter != null && !selection) { //кошки
-                switch (counter) {
-                    case 2:
-                        catReportDiet(messageText,chatId);
-                        dietShelterThirdCat(chatId, name);
-                        break;
-                    case 3:
-                        catReportWellBeingAndAdaptation(messageText,chatId);
-                        changesBehaviorShelterThirdCat(chatId, name);
-                        break;
-                    case 4:
-                        catReportChangesBehavior(messageText,chatId);
-                        saveSelection(chatId, false, 0);
-                        mainMenu(chatId, name);
-                        break;
+        if (selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() != 0) {
+            if (update.hasMessage() && update.getMessage().hasText()) {
+                long chatId = update.getMessage().getChatId();
+                String name = update.getMessage().getChat().getFirstName();
+                Integer counter = selectionRepository.findById(update.getMessage().getChatId()).get().getCounter();
+                boolean selection = selectionRepository.findById(update.getMessage().getChatId()).get().getSelection();
+                String messageText = update.getMessage().getText();
+                if (counter != null && !selection) { //кошки
+                    switch (counter) {
+                        case 2:
+                            catReportDiet(messageText, chatId);
+                            dietShelterThirdCat(chatId, name);
+                            break;
+                        case 3:
+                            catReportWellBeingAndAdaptation(messageText, chatId);
+                            changesBehaviorShelterThirdCat(chatId, name);
+                            break;
+                        case 4:
+                            catReportChangesBehavior(messageText, chatId);
+                            saveSelection(chatId, false, 0);
+                            mainMenu(chatId, name);
+                            break;
+                    }
                 }
-            }
-            if (counter != null && selection) { //собаки
-                switch (counter) {
-                    case 2:
-                        dogReportDiet(messageText,chatId);
-                        dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
-                        break;
-                    case 3:
-                        dogReportWellBeingAndAdaptation(messageText,chatId);
-                        changesBehaviorShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
-                        break;
-                    case 4:
-                        dogReportChangesBehavior(messageText,chatId);
-                        saveSelection(update.getMessage().getChatId(), true, 0);
-                        mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
-                        break;
+                if (counter != null && selection) { //собаки
+                    switch (counter) {
+                        case 2:
+                            dogReportDiet(messageText, chatId);
+                            dietShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            break;
+                        case 3:
+                            dogReportWellBeingAndAdaptation(messageText, chatId);
+                            changesBehaviorShelterThirdDog(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            break;
+                        case 4:
+                            dogReportChangesBehavior(messageText, chatId);
+                            saveSelection(update.getMessage().getChatId(), true, 0);
+                            mainMenu(update.getMessage().getChatId(), update.getMessage().getChat().getFirstName());
+                            break;
+                    }
                 }
             }
         }
 
-        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0) { //проверяем что сообщение пришло и там есть текст
+        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0 ) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
@@ -171,7 +178,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
 
             switch (messageText) {
                 case "/start":
-                    startCommand(chatId, name);
                     break;
                 case MAIN_MAIN:
                     mainMenu(chatId, name);
@@ -282,7 +288,6 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
                     prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
             }
         }
-//        log.info(update.getMessage().getPhoto().toString());
     }
 
     /**
@@ -297,6 +302,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
         String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
         prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());                    // вызываем метод подготовки сообщения
+        saveSelection(chatId,null,0);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
