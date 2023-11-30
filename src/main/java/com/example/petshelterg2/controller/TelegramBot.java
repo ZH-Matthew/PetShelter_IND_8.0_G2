@@ -87,7 +87,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     //реализация основного метода общения с пользователем (главный метод приложения)
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.getMessage().getText().equals("/start")) {
+        if (update.getMessage().hasText() && update.getMessage().getText().equals("/start")) {
             long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
             startCommand(chatId, name);
@@ -162,13 +162,13 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
             }
         }
 
-        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0 ) { //проверяем что сообщение пришло и там есть текст
+        if (update.hasMessage() && update.getMessage().hasText() && selectionRepository.findById(update.getMessage().getChatId()).get().getCounter() == 0) { //проверяем что сообщение пришло и там есть текст
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
             String name = update.getMessage().getChat().getFirstName();
 
             if (messageText.contains("/send") && config.getOwnerId().equals(Long.toString(chatId))) {       //условие для отправки сообщение от админа (может быть расширено для большего количества сообщений админа, для этого нужно вынести проверку на /send в отдельное вложенное условие)
-                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам
+                String[] message = messageText.split(" ");                                            //разделили сообщение на части по пробелам !!!добавить в сплит параметр split(" ", 2), так строк будет только 2 , первая до пробела и вторая после.
                 long userChatId = Long.parseLong(message[1]);                                                 //преобразовали строку с chatId в лонг
                 prepareAndSendMessage(userChatId, MESSAGE_BAD_REPORT);                                       //отправили сообщение пользователю
                 log.info("The admin sent a message about the poor quality of the report. ChatID: " + userChatId);
@@ -302,7 +302,7 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         // добавление смайликов в строку (на сайте эмоджипедиа, либо можно зайти в телегу и навести на смайлик, он выдаст код)
         String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
         prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());                    // вызываем метод подготовки сообщения
-        saveSelection(chatId,null,0);
+        saveSelection(chatId, null, 0);
         log.info("Replied to user " + name);                     //лог о том что мы ответили пользователю
     }
 
@@ -1094,33 +1094,38 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         );
     }
 
-    private void catReportDiet(String diet,Long chatId) {
-        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
+    private void catReportDiet(String diet, Long chatId) {
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
         catReport.setDiet(diet);
         catReportRepository.save(catReport);
     }
-    private void catReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
-        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
+
+    private void catReportWellBeingAndAdaptation(String wellBeingAndAdaptation, Long chatId) {
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
         catReport.setWellBeingAndAdaptation(wellBeingAndAdaptation);
         catReportRepository.save(catReport);
     }
-    private void catReportChangesBehavior(String wellBeingAndAdaptation,Long chatId) {
-        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(),LocalDate.now());
+
+    private void catReportChangesBehavior(String wellBeingAndAdaptation, Long chatId) {
+        CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
         catReport.setChangesBehavior(wellBeingAndAdaptation);
         catReportRepository.save(catReport);
     }
-    private void dogReportDiet(String diet,Long chatId) {
-        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
+
+    private void dogReportDiet(String diet, Long chatId) {
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(), LocalDate.now());
         dogReport.setDiet(diet);
         dogReportRepository.save(dogReport);
     }
-    private void dogReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
-        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
+
+    private void dogReportWellBeingAndAdaptation(String wellBeingAndAdaptation, Long chatId) {
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(), LocalDate.now());
         dogReport.setWellBeingAndAdaptation(wellBeingAndAdaptation);
         dogReportRepository.save(dogReport);
     }
-    private void dogReportChangesBehavior(String wellBeingAndAdaptation,Long chatId) {
-        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
+
+    private void dogReportChangesBehavior(String wellBeingAndAdaptation, Long chatId) {
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(), LocalDate.now());
         dogReport.setChangesBehavior(wellBeingAndAdaptation);
         dogReportRepository.save(dogReport);
     }
