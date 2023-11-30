@@ -17,6 +17,7 @@ public class DogReport {
     private String wellBeingAndAdaptation;//    - *Общее самочувствие и привыкание к новому месту.*
     private String ChangesBehavior;//    - *Изменение в поведении: отказ от старых привычек, приобретение новых.*
     private LocalDate date; // только дата без времени когда пользователь загрузил отчёт
+    private byte[] fileAsArrayOfBytes;//Фото массив байт
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
