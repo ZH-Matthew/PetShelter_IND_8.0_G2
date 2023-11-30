@@ -504,9 +504,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void shelterThirdCat(long chatId, String name) {
-        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
-        saveSelection(chatId, false, 1);
-        log.info("Replied to user " + name);
+        Probation ownerProbation = catOwnersRepository.findById(chatId).get().getProbation();
+        if(ownerProbation.equals(Probation.IN_PROGRESS)) {
+            prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
+            saveSelection(chatId, false, 1);
+            log.info("Replied to user " + name);
+        } else {
+            prepareAndSendMessage(chatId, NO_NEED_TO_SEND_A_REPORT);
+        }
     }
 
     private void photoShelterThirdCat(long chatId, String name) {
@@ -528,9 +533,14 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void shelterThirdDog(long chatId, String name) {
-        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_DOG);
-        saveSelection(chatId, true, 1);
-        log.info("Replied to user " + name);
+        Probation ownerProbation = dogOwnersRepository.findById(chatId).get().getProbation();
+        if(ownerProbation.equals(Probation.IN_PROGRESS)){
+            prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_DOG);
+            saveSelection(chatId, true, 1);
+            log.info("Replied to user " + name);
+        } else {
+            prepareAndSendMessage(chatId, NO_NEED_TO_SEND_A_REPORT);
+        }
     }
 
     private void photoShelterThirdDog(long chatId, String name) {

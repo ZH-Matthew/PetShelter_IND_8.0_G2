@@ -530,5 +530,6 @@ public class Constants {
     public final static String CONTACT_WITH_ME_BUTTON_CAT = "Оставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи (приют кошек)
     public final static String CONTACT_WITH_ME_BUTTON_DOG = "Oставить контактные данные" + " " + PHONE_EMOJI; // Бот может принять и записать контактные данные для связи (приют собак)
 
+    public static final String NO_NEED_TO_SEND_A_REPORT = "Вам не нужно отправлять отчёт!";
 
 }
