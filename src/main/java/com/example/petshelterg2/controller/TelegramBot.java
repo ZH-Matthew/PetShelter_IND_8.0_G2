@@ -527,25 +527,25 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
     }
 
     private void shelterThirdDog(long chatId, String name) {
-        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
+        prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_DOG);
         saveSelection(chatId, true, 1);
         log.info("Replied to user " + name);
     }
 
     private void photoShelterThirdDog(long chatId, String name) {
-        prepareAndSendMessage(chatId, DIET_CAT);
+        prepareAndSendMessage(chatId, DIET_DOG);
         saveSelection(chatId, true, 2);
         log.info("Replied to user " + name);
     }
 
     private void dietShelterThirdDog(long chatId, String name) {
-        prepareAndSendMessage(chatId, WELL_BEING_AND_ADAPTATION_CAT);
+        prepareAndSendMessage(chatId, WELL_BEING_AND_ADAPTATION_DOG);
         saveSelection(chatId, true, 3);
         log.info("Replied to user " + name);
     }
 
     private void changesBehaviorShelterThirdDog(long chatId, String name) {
-        prepareAndSendMessage(chatId, CHANGES_BEHAVIOR_CAT);
+        prepareAndSendMessage(chatId, CHANGES_BEHAVIOR_DOG);
         saveSelection(chatId, true, 4);
         log.info("Replied to user " + name);
     }
@@ -1104,10 +1104,8 @@ public class TelegramBot extends TelegramLongPollingBot {  //есть еще к�
         catReportRepository.save(catReport);
     }
     private void dogReportDiet(String diet,Long chatId) {
-        DogReport dogReport = new DogReport();
-        dogReport.setDogOwners(dogOwnersRepository.findById(chatId).get());
+        DogReport dogReport = dogReportRepository.findFirstByDogOwnersAndDate(dogOwnersRepository.findById(chatId).get(),LocalDate.now());
         dogReport.setDiet(diet);
-        dogReport.setDate(LocalDate.now());
         dogReportRepository.save(dogReport);
     }
     private void dogReportWellBeingAndAdaptation(String wellBeingAndAdaptation,Long chatId) {
