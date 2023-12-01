@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,9 +21,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
-@Component
+@Service
 public class DogService {
     private final BotConfig config;
     private final DogOwnersRepository dogOwnersRepository;
@@ -47,6 +50,21 @@ public class DogService {
         return config.getFileInfoUri();
     }
 
+    public DogOwners findOwnerById(long chatId){
+        return dogOwnersRepository.findById(chatId).orElseThrow(()-> new NoSuchElementException("Поиск не дал результатов! Пользователь с chatId : "+ chatId +" отсутствует! Логика программы нарушена,потому что он должен там быть!"));
+    }
+    public List<DogOwners> findByProbation(Probation probation){
+        return dogOwnersRepository.findByProbation(probation);
+    }
+
+    public List<DogOwners> findAll(){
+        return dogOwnersRepository.findAll();
+    }
+
+    public void saveOwner(DogOwners owner){
+        dogOwnersRepository.save(owner);
+    }
+
     /**
      * Метод сохранения пользователя в БД (с собаками):<p>
      * {@link DogOwners}
@@ -62,17 +80,17 @@ public class DogService {
         java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
         String status = "необходимо связаться";
 
-        DogOwners dogOwner = new DogOwners();
-        dogOwner.setUserName(userName);
-        dogOwner.setChatId(chatId);
-        dogOwner.setFirstName(firstName);
-        dogOwner.setLastName(lastName);
-        dogOwner.setPhoneNumber(phoneNumber);
-        dogOwner.setDateTime(currentDateTime);
-        dogOwner.setStatus(status);
-        dogOwner.setProbation(Probation.NOT_ASSIGNED);              // указали поле "не назначен" чтобы там не было null
-        dogOwnersRepository.save(dogOwner);
-        log.info("contact saved " + dogOwner);
+        DogOwners dogOwners = new DogOwners();
+        dogOwners.setUserName(userName);
+        dogOwners.setChatId(chatId);
+        dogOwners.setFirstName(firstName);
+        dogOwners.setLastName(lastName);
+        dogOwners.setPhoneNumber(phoneNumber);
+        dogOwners.setDateTime(currentDateTime);
+        dogOwners.setStatus(status);
+        dogOwners.setProbation(Probation.NOT_ASSIGNED);              // указали поле "не назначен" чтобы там не было null
+        dogOwnersRepository.save(dogOwners);
+        log.info("contact saved " + dogOwners);
     }
 
     public void processPhoto(Message telegramMessage) {

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,9 +21,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 
 @Slf4j
-@Component
+@Service
 public class CatService {
     private final BotConfig config;
     private final CatOwnersRepository catOwnersRepository;
@@ -47,6 +51,25 @@ public class CatService {
         return config.getFileInfoUri();
     }
 
+    public CatOwners findOwnerById(long chatId){
+        return catOwnersRepository.findById(chatId).orElseThrow(()-> new NoSuchElementException("Поиск не дал результатов! Пользователь с chatId : "+ chatId +" отсутствует! Логика программы нарушена,потому что он должен там быть!"));
+    }
+
+
+
+
+    public List<CatOwners> findByProbation(Probation probation){
+        return catOwnersRepository.findByProbation(probation);
+    }
+
+    public List<CatOwners> findAll(){
+        return catOwnersRepository.findAll();
+    }
+
+    public void saveOwner(CatOwners owner){
+        catOwnersRepository.save(owner);
+    }
+
     /**
      * Метод сохранения пользователя в БД (с кошками):<p>
      * {@link CatOwners}
@@ -62,17 +85,17 @@ public class CatService {
         java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
         String status = "необходимо связаться";
 
-        CatOwners catOwner = new CatOwners();
-        catOwner.setUserName(userName);
-        catOwner.setChatId(chatId);
-        catOwner.setFirstName(firstName);
-        catOwner.setLastName(lastName);
-        catOwner.setPhoneNumber(phoneNumber);
-        catOwner.setDateTime(currentDateTime);
-        catOwner.setStatus(status);
-        catOwner.setProbation(Probation.NOT_ASSIGNED);          // указали поле "не назначен" чтобы там не было null
-        catOwnersRepository.save(catOwner);
-        log.info("contact saved " + catOwner);
+        CatOwners catOwners = new CatOwners();
+        catOwners.setUserName(userName);
+        catOwners.setChatId(chatId);
+        catOwners.setFirstName(firstName);
+        catOwners.setLastName(lastName);
+        catOwners.setPhoneNumber(phoneNumber);
+        catOwners.setDateTime(currentDateTime);
+        catOwners.setStatus(status);
+        catOwners.setProbation(Probation.NOT_ASSIGNED);          // указали поле "не назначен" чтобы там не было null
+        catOwnersRepository.save(catOwners);
+        log.info("contact saved " + catOwners);
     }
 
     public void processPhoto(Message telegramMessage) {

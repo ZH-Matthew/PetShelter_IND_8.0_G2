@@ -1,6 +1,5 @@
 package com.example.petshelterg2.repository;
 
-import com.example.petshelterg2.model.CatOwners;
 import com.example.petshelterg2.model.DogOwners;
 import com.example.petshelterg2.model.Probation;
 import org.springframework.data.jpa.repository.JpaRepository;
