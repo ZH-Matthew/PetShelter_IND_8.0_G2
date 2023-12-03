@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -69,7 +68,6 @@ public class DogService {
      * Метод сохранения пользователя в БД (с собаками):<p>
      * {@link DogOwners}
      *
-     * @param update
      */
     public void saveOwner(Update update) {
         Long chatId = update.getMessage().getChatId();
@@ -103,7 +101,7 @@ public class DogService {
             var filePath = getFilePath(response);
             var fileInByte = downloadFiles(filePath);
             DogReport dogReport = new DogReport();
-            dogReport.setDogOwners(dogOwnersRepository.findById(telegramMessage.getChatId()).get());
+            dogReport.setDogOwners(findOwnerById(telegramMessage.getChatId()));
             dogReport.setFileAsArrayOfBytes(fileInByte);
             dogReport.setDate(LocalDate.now());
             dogReportRepository.save(dogReport);
