@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -23,7 +22,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 
 @Slf4j
 @Service
@@ -54,10 +52,6 @@ public class CatService {
     public CatOwners findOwnerById(long chatId){
         return catOwnersRepository.findById(chatId).orElseThrow(()-> new NoSuchElementException("Поиск не дал результатов! Пользователь с chatId : "+ chatId +" отсутствует! Логика программы нарушена,потому что он должен там быть!"));
     }
-
-
-
-
     public List<CatOwners> findByProbation(Probation probation){
         return catOwnersRepository.findByProbation(probation);
     }
@@ -74,7 +68,6 @@ public class CatService {
      * Метод сохранения пользователя в БД (с кошками):<p>
      * {@link CatOwners}
      *
-     * @param update
      */
     public void saveOwner(Update update) {
         Long chatId = update.getMessage().getChatId();
@@ -108,7 +101,7 @@ public class CatService {
             var filePath = getFilePath(response);//Преобразуем файл в JSON
             var fileInByte = downloadFiles(filePath);//Достаем данные из JSON, а именно массив байт
             CatReport catReport = new CatReport();
-            catReport.setCatOwners(catOwnersRepository.findById(telegramMessage.getChatId()).get());
+            catReport.setCatOwners(findOwnerById(telegramMessage.getChatId()));
             catReport.setFileAsArrayOfBytes(fileInByte);
             catReport.setDate(LocalDate.now());
             catReportRepository.save(catReport);

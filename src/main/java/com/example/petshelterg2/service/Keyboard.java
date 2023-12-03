@@ -1,6 +1,7 @@
 package com.example.petshelterg2.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -15,6 +16,13 @@ import static com.example.petshelterg2.constants.Constants.*;
 @Slf4j
 @Component
 public class Keyboard {
+    SendMessageService messageService;
+    SelectionService selectionService;
+    @Autowired
+    public Keyboard(SendMessageService messageService,SelectionService selectionService) {
+        this.messageService = messageService;
+        this.selectionService = selectionService;
+    }
 
     /**
      * Метод собирает стартовую клавиатуру <p>
@@ -242,4 +250,133 @@ public class Keyboard {
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
     }
+
+    //    НАЧАЛО БЛОКА КЛАВИАТУР---------------------------------------------------------------
+    public void mainMenu(long chatId, String name) { //метод отправки главного меню
+        String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT, name);
+        messageService.prepareAndSendMessageAndKeyboard(chatId, answer, startKeyboard());
+    }
+
+    public void dog(long chatId) {//метод для перехода в собачий приют, с клавиатурой
+        messageService.prepareAndSendMessageAndKeyboard(chatId, DOG_SHELTER_SELECT_TEXT, dogShelterKeyboard());
+        selectionService.save(chatId, true, 0);                      //сохранили клиента в БД Selection с выбором собак
+    }
+
+    public void cat(long chatId) {//метод для перехода в кошачий приют, с клавиатурой
+        messageService.prepareAndSendMessageAndKeyboard(chatId, CAT_SHELTER_SELECT_TEXT, catShelterKeyboard());
+        selectionService.save(chatId, false, 0);                      //сохранили клиента в БД Selection с выбором кошек
+    }
+
+    public void informationCatShelter(long chatId) {//метод для перехода в информацию о кошачьем приюте, с клавиатурой
+        messageService.prepareAndSendMessageAndKeyboard(chatId, ABOUT_CAT_SHELTER_TEXT, informationCatShelterKeyboard());
+    }
+
+    public void informationDogShelter(long chatId) {//метод для перехода в информацию о собачьем приюте, с клавиатурой
+        messageService.prepareAndSendMessageAndKeyboard(chatId, ABOUT_DOG_SHELTER_TEXT, informationDogShelterKeyboard());
+    }
+
+    public void takeAnCat(long chatId) { //переход в меню как взять кошку из приюта
+        messageService.prepareAndSendMessageAndKeyboard(chatId, CAT_TAKING_ANIMAL_FROM_SHELTER, takeAnCatShelterKeyboard());
+    }
+
+    public void takeAnDog(long chatId) { //переход в меню как взять собаку из приюта
+        messageService.prepareAndSendMessageAndKeyboard(chatId, DOG_TAKING_ANIMAL_FROM_SHELTER, takeAnDogShelterKeyboard());
+    }
+
+    public void recommendationsHomeDog(long chatId) { //переход в меню обустройство дома для собаки
+        messageService.prepareAndSendMessageAndKeyboard(chatId, ARRANGING_HOME_RECOMMENDATIONS, recommendationsHomeDogKeyboard());
+    }
+
+    public void recommendationsHomeCat(long chatId) { //переход в меню обустройство дома кошки
+        messageService.prepareAndSendMessageAndKeyboard(chatId, ARRANGING_HOME_RECOMMENDATIONS, recommendationsHomeCatKeyboard());
+    }
+
+    public void tipsFromDog(long chatId) { //переход в меню советы кинолога и почему могут отказать забрать собаку из приюта
+        messageService.prepareAndSendMessageAndKeyboard(chatId, TIPS_DOG_HANDLER, tipsFromDogKeyboard());
+    }
+
+    public void catShelterWork(long chatId) {
+        messageService.prepareAndSendMessage(chatId, CAT_SHELTER_WORK_SCHEDULE);
+    }
+
+    public void dogShelterWork(long chatId) {
+        messageService.prepareAndSendMessage(chatId, DOG_SHELTER_WORK_SCHEDULE);
+    }
+
+    public void catShelterSecurityContacts(long chatId) {
+        messageService.prepareAndSendMessage(chatId, CAT_SHELTER_SECURITY_CONTACTS);
+    }
+
+    public void dogShelterSecurityContacts(long chatId) {
+        messageService.prepareAndSendMessage(chatId, DOG_SHELTER_SECURITY_CONTACTS);
+    }
+
+    public void safetyNotesDog(long chatId) {
+        messageService.prepareAndSendMessage(chatId, SAFETY_NOTES_DOG);
+    }
+
+    public void safetyNotesCat(long chatId) {
+        messageService.prepareAndSendMessage(chatId, SAFETY_NOTES_CAT);
+    }
+
+    public void safetyNotesRulesForFirstMetCat(long chatId) {
+        messageService.prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_CAT);
+    }
+
+    public void safetyNotesRulesForFirstMetDog(long chatId) {
+        messageService.prepareAndSendMessage(chatId, RULES_FOR_FIRST_MET_DOG);
+    }
+
+    public void listOfDocumentsForAdoption(long chatId) {
+        messageService.prepareAndSendMessage(chatId, LIST_OF_DOCUMENTS_FOR_ADOPTION);
+    }
+
+    public void transportingRecommendationsCat(long chatId) {
+        messageService.prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_CAT);
+    }
+
+    public void transportingRecommendationsDog(long chatId) {
+        messageService.prepareAndSendMessage(chatId, TRANSPORTING_RECOMMENDATIONS_DOG);
+    }
+
+    public void arrangingHomeRecommendationsKitty(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_KITTY);
+    }
+
+    public void arrangingHomeRecommendationsPuppy(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_PUPPY);
+    }
+
+    public void arrangingHomeRecommendationsCat(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_CAT);
+    }
+
+    public void arrangingHomeRecommendationsDog(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DOG);
+    }
+
+    public void arrangingHomeRecommendationsDisabledCat(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_CAT);
+    }
+
+    public void arrangingHomeRecommendationsDisabledDog(long chatId) {
+        messageService.prepareAndSendMessage(chatId, ARRANGING_HOME_RECOMMENDATIONS_DISABLED_DOG);
+    }
+
+    public void initialDogHandlerAdvice(long chatId) {
+        messageService.prepareAndSendMessage(chatId, INITIAL_DOG_HANDLER_ADVICE);
+    }
+
+    public void dogHandlerRecommendation(long chatId) {
+        messageService.prepareAndSendMessage(chatId, DOG_HANDLER_RECOMMENDATION);
+    }
+
+    public void refusalReasonsList(long chatId) {
+        messageService.prepareAndSendMessage(chatId, REFUSAL_REASONS_LIST);
+    }
+
+    public void defaultAnswer(long chatId){
+        messageService.prepareAndSendMessage(chatId, "Я пока не знаю как на это ответить!");
+    }
+//  ОКОНЧАНИЕ БЛОКА КЛАВИАТУР --------------------------------------------------------------------------------------
 }
