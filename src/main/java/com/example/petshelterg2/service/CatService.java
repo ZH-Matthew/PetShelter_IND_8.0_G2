@@ -90,7 +90,12 @@ public class CatService {
         catOwnersRepository.save(catOwners);
         log.info("contact saved " + catOwners);
     }
-
+    /**
+     * Метод сохранения фото животного в БД отчета (с кошками):<p>
+     * {@link CatReport}
+     *
+     * @param telegramMessage (сообщение отправленное пользователем)
+     */
     public void processPhoto(Message telegramMessage) {
         var photoSizeCount = telegramMessage.getPhoto().size();
         var photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() - 1 : 0;
@@ -105,18 +110,25 @@ public class CatService {
             catReport.setFileAsArrayOfBytes(fileInByte);
             catReport.setDate(LocalDate.now());
             catReportRepository.save(catReport);
+            log.info("photo saved " + telegramMessage.getChatId());
         } else {
             throw new RuntimeException(telegramPhoto.getFileId() + "Bad response from telegram service: " + response);
         }
     }
-
+    /**
+     * Метод преобразования в JSON:<p>
+     *
+     * @param response (ответ полученный от пользователя)
+     */
     private String getFilePath(ResponseEntity<String> response) {//достаем file_path
         var jsonObject = new JSONObject(response.getBody());
         return String.valueOf(jsonObject
                 .getJSONObject("result")
                 .getString("file_path"));
     }
-
+    /**
+     * Метод конвертирует файл в формате JSON в массив byte[]:<p>
+     */
     private byte[] downloadFiles(String filePath) {
         var fullUri = getFileStorageUri().replace("{bot.token}", getBotToken())
                 .replace("{filePath}", filePath);
@@ -133,7 +145,9 @@ public class CatService {
             throw new RuntimeException(urlObj.toExternalForm(), e);
         }
     }
-
+    /**
+     * Метод для получения HTTP запроса:<p>
+     */
     private ResponseEntity<String> getFilePath(String fileId) {
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
@@ -147,22 +161,43 @@ public class CatService {
                 getBotToken(), fileId
         );
     }
-
+    /**
+     * Метод для сохранения информации о рационе животного:<p>
+     * {@link CatReport}
+     *
+     * @param diet   (сообщение от пользователя)
+     * @param chatId (Id чата пользователя)
+     */
     public void reportDiet(String diet, Long chatId) {
         CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
         catReport.setDiet(diet);
         catReportRepository.save(catReport);
+        log.info("saved info about diet " + chatId);
     }
-
+    /**
+     * Метод для сохранения информации об общем самочувствии животного:<p>
+     * {@link CatReport}
+     *
+     * @param wellBeingAndAdaptation (сообщение от пользователя)
+     * @param chatId                 (Id чата пользователя)
+     */
     public void reportWellBeingAndAdaptation(String wellBeingAndAdaptation, Long chatId) {
         CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
         catReport.setWellBeingAndAdaptation(wellBeingAndAdaptation);
         catReportRepository.save(catReport);
+        log.info("saved info about wellBeingAndAdaptation " + chatId);
     }
-
-    public void reportChangesBehavior(String wellBeingAndAdaptation, Long chatId) {
+    /**
+     * Метод для сохранения информации об изменении в поведении животного:<p>
+     * {@link CatReport}
+     *
+     * @param changesBehavior (сообщение от пользователя)
+     * @param chatId          (Id чата пользователя)
+     */
+    public void reportChangesBehavior(String changesBehavior, Long chatId) {
         CatReport catReport = catReportRepository.findFirstByCatOwnersAndDate(catOwnersRepository.findById(chatId).get(), LocalDate.now());
-        catReport.setChangesBehavior(wellBeingAndAdaptation);
+        catReport.setChangesBehavior(changesBehavior);
         catReportRepository.save(catReport);
+        log.info("saved info about changesBehavior " + chatId);
     }
 }
