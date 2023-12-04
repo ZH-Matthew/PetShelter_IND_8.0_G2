@@ -74,6 +74,9 @@ public class GeneralService {
     }
 
     public void processReport(long chatId,String name, Update update) {
+        if (sService.findById(chatId).getCounter() == 5) {
+            sService.save(chatId, false, 0);
+        }
         if (update.hasMessage() && update.getMessage().hasText()) {
             Integer counter = sService.findById(chatId).getCounter();
             boolean selection = sService.findById(chatId).getSelection();
@@ -92,8 +95,8 @@ public class GeneralService {
                         break;
                     case 4:
                         catService.reportChangesBehavior(messageText, chatId);
-                        sService.save(chatId, false, 0);
                         keyboard.mainMenu(chatId, name);
+                        sService.save(chatId, false, 5);
                         break;
                 }
             }
@@ -111,7 +114,7 @@ public class GeneralService {
                         break;
                     case 4:
                         dogService.reportChangesBehavior(messageText, chatId);
-                        sService.save(chatId, true, 0);
+                        sService.save(chatId, true, 5);
                         keyboard.mainMenu(chatId, name);
                         break;
                 }
