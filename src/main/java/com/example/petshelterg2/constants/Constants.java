@@ -488,10 +488,10 @@ public class Constants {
     public final static String SHELTER_THIRD_STEP_DOG = "Ждем фото вашей " + DOG_EMOJI;
     public final static String DIET_CAT = "Сообщите о рационе животного " + CAT_EMOJI;
     public final static String DIET_DOG = "Сообщите о рационе животного " + DOG_EMOJI;
-    public final static String WELL_BEING_AND_ADAPTATION_CAT = "Сообщите о общем самочувствие и привыкание к новому месту" + CAT_EMOJI;
-    public final static String WELL_BEING_AND_ADAPTATION_DOG = "Сообщите о общем самочувствие и привыкание к новому месту" + DOG_EMOJI;
-    public final static String CHANGES_BEHAVIOR_CAT = "Сообщите о изменение в поведении: отказ от старых привычек, приобретение новых и т.д." + CAT_EMOJI;
-    public final static String CHANGES_BEHAVIOR_DOG = "Сообщите о изменение в поведении: отказ от старых привычек, приобретение новых и т.д." + DOG_EMOJI;
+    public final static String WELL_BEING_AND_ADAPTATION_CAT = "Сообщите об общем самочувствии и привыкании к новому месту" + CAT_EMOJI;
+    public final static String WELL_BEING_AND_ADAPTATION_DOG = "Сообщите об общем самочувствии и привыкании к новому месту" + DOG_EMOJI;
+    public final static String CHANGES_BEHAVIOR_CAT = "Сообщите об изменении в поведении: отказ от старых привычек, приобретение новых и т.д." + CAT_EMOJI;
+    public final static String CHANGES_BEHAVIOR_DOG = "Сообщите об изменении в поведении: отказ от старых привычек, приобретение новых и т.д." + DOG_EMOJI;
     //buttons
     public final static String MAIN_MAIN = "Вернуться в главное меню" + " " + BACK_EMOJI;
     public final static String CAT_SHELTER_BUTTON = "Приют для кошек" + " " + CAT_EMOJI;
