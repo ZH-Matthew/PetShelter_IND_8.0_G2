@@ -1,11 +1,15 @@
 package com.example.petshelterg2.service;
 
+import com.example.petshelterg2.model.CatOwners;
+import com.example.petshelterg2.model.DogOwners;
+import com.example.petshelterg2.model.Probation;
 import com.example.petshelterg2.model.Selection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -32,6 +36,8 @@ class GeneralServiceTest {
     CatService catService;
     @Mock
     Message message;
+    @Mock
+    Chat chat;
     @InjectMocks
     GeneralService service;
 
@@ -41,6 +47,12 @@ class GeneralServiceTest {
     String answer = String.format(GREETING_PLUS_SELECT_SHELTER_TEXT_START, name);
 
     String messageText = "message text";
+
+    String textForAdmin = "/text 123";
+
+    String adminId = "321";
+
+
     @Test
     public void startCommandTest(){
         when(keyboard.startKeyboard()).thenReturn(replyKeyboardMarkup);
@@ -253,5 +265,72 @@ class GeneralServiceTest {
         verify(dogService,times(1)).reportChangesBehavior(messageText, chatId);
         verify(keyboard,times(1)).mainMenu(chatId, name);
         verify(sService,times(1)).save(chatId, true, 5);
+    }
+    @Test
+    public void sendAdminMessageTest(){
+        service.sendAdminMessage(textForAdmin);
+
+        verify(sendMService,times(1)).prepareAndSendMessage(chatId, MESSAGE_BAD_REPORT);
+    }
+
+    @Test
+    public void shelterThirdCatInProgressTest(){
+        CatOwners catOwners = new CatOwners();
+        catOwners.setProbation(Probation.IN_PROGRESS);
+
+        when(catService.findOwnerById(chatId)).thenReturn(catOwners);
+
+        service.shelterThirdCat(chatId);
+
+        verify(sendMService,times(1)).prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_CAT);
+        verify(sService,times(1)).save(chatId, false, 1);
+    }
+
+    @Test
+    public void shelterThirdCatNotInProgressTest(){
+        CatOwners catOwners = new CatOwners();
+        catOwners.setProbation(Probation.NOT_ASSIGNED);
+
+        when(catService.findOwnerById(chatId)).thenReturn(catOwners);
+
+        service.shelterThirdCat(chatId);
+
+        verify(sendMService,times(1)).prepareAndSendMessage(chatId, NO_NEED_TO_SEND_A_REPORT);
+    }
+
+    @Test
+    public void shelterThirdDogInProgressTest(){
+        DogOwners dogOwners = new DogOwners();
+        dogOwners.setProbation(Probation.IN_PROGRESS);
+
+        when(dogService.findOwnerById(chatId)).thenReturn(dogOwners);
+
+        service.shelterThirdDog(chatId);
+
+        verify(sendMService,times(1)).prepareAndSendMessage(chatId, SHELTER_THIRD_STEP_DOG);
+        verify(sService,times(1)).save(chatId, true, 1);
+    }
+
+    @Test
+    public void shelterThirdDogNotInProgressTest(){
+        DogOwners dogOwners = new DogOwners();
+        dogOwners.setProbation(Probation.NOT_ASSIGNED);
+
+        when(dogService.findOwnerById(chatId)).thenReturn(dogOwners);
+
+        service.shelterThirdDog(chatId);
+
+        verify(sendMService,times(1)).prepareAndSendMessage(chatId, NO_NEED_TO_SEND_A_REPORT);
+    }
+
+    @Test
+    public void callAVolunteerTest(){
+        when(update.getMessage()).thenReturn(message);
+        when(message.getChat()).thenReturn(chat);
+        when(chat.getUserName()).thenReturn(name);
+
+        service.callAVolunteer(chatId,update,adminId);
+
+        verify(sendMService,times(1)).callAVolunteer(chatId, name,adminId);
     }
 }
