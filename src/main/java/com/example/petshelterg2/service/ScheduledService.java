@@ -37,7 +37,7 @@ public class ScheduledService {
     //подумать над оптимизацией кода (есть ли смысл и возможность наследования и использования полиморфизма, есть ли смысл сократить количество классов)
     //метод проверки испытательного срока
     @Scheduled(cron = "@daily")
-    private void findProbation() {
+    public void findProbation() {
         log.info("daily search for probation statuses has begun");
 
         List<CatOwners> catOwners = catService.findAll(); //собрали всех пользователей по двум БД
@@ -109,7 +109,7 @@ public class ScheduledService {
     //cron = ("0 55 23 * * ?") - за 5 минут до полуночи (для работы)
     //метод проверки отчёта на просрочку (1 день /2 дня)
     @Scheduled(cron = "0 55 23 * * ?")
-    private void checkReport() {
+    public void checkReport() {
         log.info("the report has been checked for any delays");
 
         List<CatOwners> catOwners = catService.findByProbation(Probation.IN_PROGRESS); //взяли всех пользователей у которых статус испытательного срока активный (это значит что они должны присылать отчет)
@@ -134,7 +134,7 @@ public class ScheduledService {
             } else if (!(dates.contains(dateNow)) && catOwner.getDaysOverdueReport() == 1) {  //если нет и просрочки уже есть 1 день то
                 sendMService.prepareAndSendMessage(Long.parseLong(config.getOwnerId()), NOTICE_OF_LATE_REPORT_FOR_ADMIN + "Чат ID: " + catOwner.getChatId() + " , Номер телефона : " + catOwner.getPhoneNumber()); //сообщение админу
                 CatOwners newCatOwners = catService.findOwnerById(catOwner.getChatId());
-                newCatOwners.setDaysOverdueReport(2);                                             //добавили 1 день просрочки
+                newCatOwners.setDaysOverdueReport(2);                                             //добавили ещё 1 день просрочки
                 catService.saveOwner(newCatOwners);
             }
         });
