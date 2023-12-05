@@ -16,8 +16,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.petshelterg2.constants.Constants.VOLUNTEER_MESSAGE;
+import static com.example.petshelterg2.constants.Constants.VOLUNTEER_WILL_WRITE_TO_YOU;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +43,9 @@ class SendMessageServiceTest {
     List<KeyboardRow> keyboardRows = new ArrayList<>();             //создание рядов в клавиатуре
     KeyboardRow row = new KeyboardRow();                            //первый ряд клавиатуры
 
+    SendMessage messageVolunteer = new SendMessage();
+    SendMessage messageUser = new SendMessage();
+
     {
         message.setChatId(String.valueOf(chaId));
         message.setText(text);
@@ -49,6 +53,10 @@ class SendMessageServiceTest {
         row.add(lastButton);
         keyboardRows.add(row);                                          //добавляем в клавиатуру ряд
         keyboardMarkup.setKeyboard(keyboardRows);
+        messageVolunteer.setChatId(chatIdAdmin);
+        messageVolunteer.setText(VOLUNTEER_MESSAGE + name);
+        messageUser.setChatId(String.valueOf(chaId));
+        messageUser.setText(VOLUNTEER_WILL_WRITE_TO_YOU);
     }
 
     @Test
@@ -80,8 +88,9 @@ class SendMessageServiceTest {
     }
 
     @Test
-    void callAVolunteerTest() throws TelegramApiException { //узнать как написать тест если метод вызывает сразу 2 одинаковых метода)
+    void callAVolunteerTest() throws TelegramApiException {
         service.callAVolunteer(chaId,name,chatIdAdmin);
-        verify(bot,times(2)).execute(any(SendMessage.class));
+        verify(bot,times(1)).execute(messageVolunteer); //один раз должен вызваться execute с месседжем для админа(волонтёра)
+        verify(bot,times(1)).execute(messageUser); //один раз должен вызваться execute с месседжем для пользователя
     }
 }
